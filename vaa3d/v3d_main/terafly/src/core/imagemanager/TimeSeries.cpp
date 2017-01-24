@@ -134,7 +134,7 @@ TimeSeries::TimeSeries(const char *rootDir, std::string frames_format /* = "" */
 
 TimeSeries::~TimeSeries(void) throw (iim::IOException)
 {
-    /**/iim::debug(iim::LEV2, 0, __iim__current__function__);
+    //iim::debug(iim::LEV2, 0, __iim__current__function__);
 }
 
 // pure virtual method inherithed from abstract class <VirtualVolume>

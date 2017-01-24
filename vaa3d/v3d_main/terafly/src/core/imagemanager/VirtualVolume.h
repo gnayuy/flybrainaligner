@@ -84,7 +84,7 @@ public:
 
     }
 
-	virtual ~VirtualVolume() { 
+   ~VirtualVolume() { 
 		if(root_dir)
 			delete[] root_dir;
 		if(active)
