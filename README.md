@@ -3,7 +3,7 @@ flybrainaligner is developed for aligning fly brains
 
 ## Install
 
-Install Vaa3D in Linux with [Qt][]4.
+Install Vaa3D in Linux with [Qt][]4 with [HDF5][](>v1.8.14).
 
 Without h5j format support (recommended):
 ```
@@ -24,3 +24,4 @@ cd vaa3d
 ##
 
 [Qt]: https://www.qt.io/
+[HDF5]: https://support.hdfgroup.org/HDF5/
