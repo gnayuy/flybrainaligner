@@ -47,6 +47,7 @@ Download the fsl from the official website and copy "fsl/bin/flirt" to "Toolkits
 
 ## Usage
 
+See [brainaligner][].
 
 ## Reference
 1. Peng, H., Ruan, Z., Long, F., Simpson, J.H., and Myers, E.W. (2010) "V3D enables real-time 3D visualization and quantitative analysis of large-scale biological image data sets," Nature Biotechnology, Vol. 28, No. 4, pp.348-353.
@@ -59,3 +60,4 @@ Download the fsl from the official website and copy "fsl/bin/flirt" to "Toolkits
 [HDF5]: https://support.hdfgroup.org/HDF5
 [ANTs]: https://github.com/stnava/ANTs.git
 [FSL]: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki
+[brainaligner]: https://github.com/gnayuy/flybrainaligner/tree/master/pipelines/brainaligner
