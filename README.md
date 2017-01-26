@@ -29,6 +29,7 @@ cd vaa3d
 
 ##
 
-[Qt]: https://www.qt.io/
-[HDF5]: https://support.hdfgroup.org/HDF5/
+[Qt]: https://www.qt.io
+[HDF5]: https://support.hdfgroup.org/HDF5
 [ANTs]: https://github.com/stnava/ANTs.git
+[FSL]: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki
