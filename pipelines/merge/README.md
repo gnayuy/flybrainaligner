@@ -1,1 +1,1 @@
-qsub -A flylight -pe batch 16 -l sandy=true -j y -b y -cwd -V '/nrs/scicompsoft/yuy/flylight/mergeCmd.sh < /nrs/scicompsoft/yuy/flylight/20160909_24_40X/A7_ZB7_T1_CEN_20160909_24_40X_R1/A7_ZB7_T1_CEN_20160909_24_40X_R1.config'
+qsub -A flylight -pe batch 16 -l sandy=true -j y -b y -cwd -V '/path/mergeCmd.sh < /path/sample.config'
