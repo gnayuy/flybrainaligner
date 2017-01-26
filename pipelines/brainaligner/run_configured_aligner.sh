@@ -7,11 +7,13 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 
 SCRIPT_PATH=$1
 NUM_THREADS=$2
+DEBUG_MODE=$3
 OUTPUT_DIR=""
 shift 2
 ARGS="$@"
 
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=$NUM_THREADS
+export FSLOUTPUTTYPE=NIFTI_GZ
 
 while getopts ":o:h:" opt
 do case "$opt" in
@@ -45,8 +47,13 @@ echo "~ Space usage: " `du -h $WORKING_DIR`
 echo "~ Moving final output to $OUTPUT_DIR"
 mv $WORKING_DIR/FinalOutputs/* $OUTPUT_DIR
 
+if [[ $DEBUG_MODE =~ "debug" ]]
+then
+echo "~ debugging mode"
+else
 echo "~ Removing temp directory"
 rm -rf $WORKING_DIR
+fi
 
 echo "~ Compressing final outputs in: $OUTPUT_DIR"
 cd $OUTPUT_DIR
