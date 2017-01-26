@@ -7,7 +7,7 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 
 SCRIPT_PATH=$1
 NUM_THREADS=$2
-DEBUG_MODE=$3
+DEBUG_MODE=""
 OUTPUT_DIR=""
 shift 2
 ARGS="$@"
@@ -15,9 +15,10 @@ ARGS="$@"
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=$NUM_THREADS
 export FSLOUTPUTTYPE=NIFTI_GZ
 
-while getopts ":o:h:" opt
+while getopts ":o:d:h:" opt
 do case "$opt" in
     o)  OUTPUT_DIR="$OPTARG";;
+    d)  DEBUG_MODE="$OPTARG";;
     h) echo "Usage: $0 <alignmentScript> [-o output_dir] ..." >&2
         exit 1;;
     esac
