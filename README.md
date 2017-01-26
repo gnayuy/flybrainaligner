@@ -20,7 +20,20 @@ cd vaa3d
 
 ### Install [ANTs][]
 
+```
+mkdir build
+cd build
+ccmake ..
+make -j8
+```
+
+After compiled ANTs, then copy ANTS and WarpImageMultiTransform to the "Toolkits" folder.
+
 ### Install [FSL][]
+
+Download the binary executive fsl from the official website and copy FSL/bin/flirt to the "Toolkits" folder.
+
+* I highly suggest creating a "Toolkits" folder and then "ANTS", "FSL", and "Vaa3D" folders within "Toolkits".
 
 ## Usage
 
