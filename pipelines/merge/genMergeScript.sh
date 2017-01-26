@@ -1,7 +1,7 @@
 
 port=900
 
-for i in /nrs/scicompsoft/yuy/flylight/*/*;
+for i in /samples_dir/*;
 do
 
 ii=${i%*/*}"/"
