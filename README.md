@@ -13,7 +13,7 @@ cd vaa3d
 With cmake:
 ```
 cd vaa3d
-./build.cmake -platform linux-x86_64 -h5j
+./build.cmake -h5j install
 ```
 ## Usage
 
