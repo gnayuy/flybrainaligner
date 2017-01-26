@@ -1,5 +1,6 @@
 # flybrainaligner
-flybrainaligner is developed for aligning fly brains
+
+This repo collects the related software and pipelines developed for aligning fly brains.
 
 ## Install
 
