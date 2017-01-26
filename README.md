@@ -28,7 +28,7 @@ cd vaa3d
 ./build.linux -B -m -j8
 ```
 
-Copy vaa3d and plugins folder to "Toolkits/Vaa3D"
+Copy "vaa3d" and the "plugins" folder to "Toolkits/Vaa3D"
 
 ### Install [ANTs][]
 
@@ -39,11 +39,11 @@ ccmake ..
 make -j8
 ```
 
-Copy ANTS and WarpImageMultiTransform to "Toolkits/ANTS".
+Copy "ANTS" and "WarpImageMultiTransform" to "Toolkits/ANTS".
 
 ### Install [FSL][]
 
-Download the binary executive fsl from the official website and copy FSL/bin/flirt to "Toolkits/FSL".
+Download the fsl from the official website and copy "fsl/bin/flirt" to "Toolkits/FSL".
 
 ## Usage
 
