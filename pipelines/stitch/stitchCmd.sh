@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# stitching script 12/06/2016
+# stitching script
 #
 
 read INPUTDIR
