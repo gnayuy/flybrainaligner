@@ -4,6 +4,8 @@ This repo collects the related software and pipelines developed for aligning fly
 
 ## Install
 
+Create a folder "Toolkits".
+
 ```
 mkdir Toolkits
 cd Toolkits
