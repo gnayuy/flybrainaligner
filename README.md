@@ -33,7 +33,7 @@ After compiled ANTs, then copy ANTS and WarpImageMultiTransform to the "Toolkits
 
 Download the binary executive fsl from the official website and copy FSL/bin/flirt to the "Toolkits" folder.
 
-* I highly suggest creating a "Toolkits" folder and then "ANTS", "FSL", and "Vaa3D" folders within "Toolkits".
+* Create a "Toolkits" folder and the "ANTS", "FSL", and "Vaa3D" folders respectively.
 
 ## Usage
 
