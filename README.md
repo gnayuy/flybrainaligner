@@ -12,7 +12,7 @@ mkdir FSL
 mkdir Vaa3D
 ```
 
-### Install Vaa3D in Linux with [Qt][]4.
+### Install [Vaa3D][] on Linux with [Qt][]4.
 
 With cmake (recommended):
 ```
@@ -47,11 +47,12 @@ Download the binary executive fsl from the official website and copy FSL/bin/fli
 
 
 ## Reference
-1. Peng, H., Ruan, Z., Long, F., Simpson, J.H., and Myers, E.W. (2010) "V3D enables real-time 3D visualization and quantitative analysis of large-scale biological image data sets," Nature Biotechnology, Vol. 28, No. 4, pp.348-353. (http://vaa3d.org) 
+1. Peng, H., Ruan, Z., Long, F., Simpson, J.H., and Myers, E.W. (2010) "V3D enables real-time 3D visualization and quantitative analysis of large-scale biological image data sets," Nature Biotechnology, Vol. 28, No. 4, pp.348-353.
 2. Murphy, S. D., Rokicki, K., Bruns, C., Yu, Y., Foster, L., Trautman, E., ... & Clack, N. (2014). The janelia workstation for neuroscience. Keystone Big Data in Biology. san francisco. CA.
 
 ##
 
+[Vaa3D]: http://vaa3d.org
 [Qt]: https://www.qt.io
 [HDF5]: https://support.hdfgroup.org/HDF5
 [ANTs]: https://github.com/stnava/ANTs.git
