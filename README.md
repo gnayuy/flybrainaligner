@@ -6,16 +6,18 @@ This repo collects the related software and pipelines developed for aligning fly
 
 ### Install Vaa3D in Linux with [Qt][]4.
 
+With cmake (recommended):
+```
+cd vaa3d
+./build.cmake -h5j install
+```
+
 with shell script:
 ```
 cd vaa3d
 ./build.linux -B -m -j8
 ```
-With cmake:
-```
-cd vaa3d
-./build.cmake -h5j install
-```
+
 ### Install [ANTs][]
 
 ### Install [FSL][]
