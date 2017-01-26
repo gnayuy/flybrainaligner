@@ -4,6 +4,14 @@ This repo collects the related software and pipelines developed for aligning fly
 
 ## Install
 
+```
+mkdir Toolkits
+cd Toolkits
+mkdir ANTS
+mkdir FSL
+mkdir Vaa3D
+```
+
 ### Install Vaa3D in Linux with [Qt][]4.
 
 With cmake (recommended):
@@ -18,6 +26,8 @@ cd vaa3d
 ./build.linux -B -m -j8
 ```
 
+Copy vaa3d and plugins folder to "Toolkits/Vaa3D"
+
 ### Install [ANTs][]
 
 ```
@@ -27,13 +37,11 @@ ccmake ..
 make -j8
 ```
 
-After compiled ANTs, then copy ANTS and WarpImageMultiTransform to the "Toolkits" folder.
+Copy ANTS and WarpImageMultiTransform to "Toolkits/ANTS".
 
 ### Install [FSL][]
 
-Download the binary executive fsl from the official website and copy FSL/bin/flirt to the "Toolkits" folder.
-
-* Create a "Toolkits" folder and the "ANTS", "FSL", and "Vaa3D" folders respectively.
+Download the binary executive fsl from the official website and copy FSL/bin/flirt to "Toolkits/FSL".
 
 ## Usage
 
