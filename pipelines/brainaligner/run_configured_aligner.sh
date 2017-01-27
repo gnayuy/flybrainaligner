@@ -7,7 +7,7 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 
 SCRIPT_PATH=$1
 NUM_THREADS=$2
-DEBUG_MODE=""
+DEBUG_MODE="release"
 OUTPUT_DIR=""
 shift 2
 ARGS="$@"
@@ -34,8 +34,10 @@ cd $WORKING_DIR
 echo "~ Alignment Script: $SCRIPT_PATH"
 echo "~ Working Dir: $WORKING_DIR"
 echo "~ Output Dir: $OUTPUT_DIR"
+echo "~ DEBUG_MODE $DEBUG_MODE"
 
 ARGS=`echo $ARGS | sed -e "s/-o \S*/-w ${WORKING_DIR//\//\\/}/"`
+ARGS=`echo $ARGS | sed -e "s/-d \S*//"`
 
 echo "~ COMMAND:"
 CMD="$SCRIPT_PATH $ARGS"
