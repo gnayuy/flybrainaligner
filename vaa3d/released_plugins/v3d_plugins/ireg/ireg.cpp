@@ -3528,7 +3528,16 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
         QString qs_basename_input=QFileInfo(qs_filename_img_input).baseName();
         QString qs_pathname_input=QFileInfo(qs_filename_img_input).path();
 
-        if(!outfile)
+        if(outfile)
+        {
+            qs_filename_output=QString(outfile);
+
+//            QString qs_pathname_output=QFileInfo(qs_filename_output).path();
+//            QString qs_basename_output=QFileInfo(qs_filename_output).baseName();
+
+//            qs_filename_output=qs_pathname_output+"/"+qs_basename_output+".v3draw";
+        }
+        else
         {
             qs_filename_output=qs_pathname_input+"/"+qs_basename_input+".v3draw";
         }
