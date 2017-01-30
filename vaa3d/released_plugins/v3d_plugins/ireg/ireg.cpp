@@ -3648,17 +3648,17 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                     }
                 }
 
-//                unsigned char *ptmp = NULL;
-//                y_new<unsigned char, V3DLONG>(ptmp, offsetz);
+                unsigned char *ptmp = NULL;
+                y_new<unsigned char, V3DLONG>(ptmp, offsetz);
 
-//                unsigned char *p_input = poutput;
-//                poutput = ptmp;
+                unsigned char *p_input = poutput;
+                poutput = ptmp;
 
-//                flip<unsigned char, V3DLONG>(poutput, p_input, sz_img, AY); // y
+                flip<unsigned char, V3DLONG>(poutput, p_input, sz_img, AY); // y
 
-//                foreach(offsetz, i) p_input[i] = poutput[i];
+                foreach(offsetz, i) p_input[i] = poutput[i];
 
-//                y_del<unsigned char>(ptmp);
+                y_del<unsigned char>(ptmp);
 
             }
             else
