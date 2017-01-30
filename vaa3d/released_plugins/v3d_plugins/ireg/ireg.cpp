@@ -3626,13 +3626,15 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                 unsigned short *pinput = (unsigned short *)p1dImg + c*pagesz;
                 unsigned char *poutput = p_mip + c*offsetz;
 
+                double ratio = 255/4095;
+
                 for(V3DLONG j=0; j<sz_img[1]; j++)
                 {
                     V3DLONG offset_j = j*sz_img[0];
                     for(V3DLONG i=0; i<sz_img[0]; i++)
                     {
                         V3DLONG idx = offset_j + i;
-                        unsigned short val = pinput[idx];
+                        double val = pinput[idx];
 
                         for(V3DLONG k=1; k<sz; k++)
                         {
@@ -3640,7 +3642,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
 
                             if(val < curval) val = curval;
                         }
-                        poutput[idx] = val/4095*255;
+                        poutput[idx] = (unsigned char)( val*ratio );
                     }
                 }
 
