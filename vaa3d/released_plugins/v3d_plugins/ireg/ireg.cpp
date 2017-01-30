@@ -3667,7 +3667,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
         qDebug()<<"save as ..."<<qs_filename_output;
 
         // save
-        if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(p_mip),sz_img,datatype_img))
+        if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(p_mip),sz_img,1))
         {
             printf("ERROR: saveImage failed!\n");
             return false;
