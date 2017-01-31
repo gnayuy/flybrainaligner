@@ -3326,7 +3326,7 @@ void resizeMC(Y_IMG_OUT &pOut, Y_IMG_IN pIn, Tidx refno)
 }
 
 template <class Tdata, class Tidx, class Y_IMG_TYPE>
-void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype)
+void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampling)
 {
     // resize image with multiple color channels
 
@@ -3358,7 +3358,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype)
         return;
     }
 
-    if(sx>tx || sy>ty || sz>tz)
+    if( (sx>tx || sy>ty || sz>tz) && !b_skipsampling)
     {
         REAL dx, dy, dz;
         REAL sampleratio;

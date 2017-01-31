@@ -4446,6 +4446,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
         V3DLONG channel_ref_sub = 0;
 
         int b_interptype = 0; // trilinear interpolation
+        bool b_skipsampling = false;
 
         // inputs
         QString qs_filename_img_sub, qs_filename_img_tar;
@@ -4538,6 +4539,11 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                             else if (!strcmp(key, "i"))
                             {
                                 b_interptype = atoi( argv[i+1] );
+                                i++;
+                            }
+                            else if(!strcmp(key, "skip"))
+                            {
+                                b_skipsampling = atoi( argv[i+1] )!=0?true:false;
                                 i++;
                             }
                             else
@@ -4651,7 +4657,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
         }
 
         //
-        /// convert to 8bit data
+        /// convert to 8bit data by default
         unsigned char *p_sub=NULL;
         V3DLONG sc = sz_img2[3];
         V3DLONG totalplxs_sub = sz_img2[0]*sz_img2[1]*sz_img2[2]*sc;
@@ -4723,7 +4729,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
             Y_IMG_UINT8 pOut;
             pOut.setImage(p_subrec, sz_img1, 4);
 
-            resizeImage<unsigned char, V3DLONG, Y_IMG_UINT8>(pOut, pIn, b_interptype);
+            resizeImage<unsigned char, V3DLONG, Y_IMG_UINT8>(pOut, pIn, b_interptype, b_skipsampling);
 
             // de-alloc
             if(!b_uint8) y_del<unsigned char>(p1dImg2);
@@ -4755,7 +4761,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
             Y_IMG_UINT16 pOut;
             pOut.setImage(psubrec, sz_img1, 4);
 
-            resizeImage<unsigned short, V3DLONG, Y_IMG_UINT16>(pOut, pIn, b_interptype);
+            resizeImage<unsigned short, V3DLONG, Y_IMG_UINT16>(pOut, pIn, b_interptype, b_skipsampling);
 
             // de-alloc
             if(!b_uint8) y_del<unsigned char>(p1dImg2);
