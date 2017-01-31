@@ -3370,6 +3370,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
         REAL tbx, tex, tby, tey, tbz, tez;
 
         REAL sum;
+        REAL thresh = 100;
 
         //
         for(c=0; c<sc; c++)
@@ -3390,7 +3391,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                     }
                 }
 
-                if(sum==0)
+                if(sum<thresh)
                 {
                     if(!found)
                     {
@@ -3440,7 +3441,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                     }
                 }
 
-                if(sum==0)
+                if(sum<thresh)
                 {
                     if(!found)
                     {
@@ -3489,7 +3490,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                     }
                 }
 
-                if(sum==0)
+                if(sum<thresh)
                 {
                     if(!found)
                     {
@@ -3500,7 +3501,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                     {
                         tez = z;
                         break;
-                    }
+                    }bool
                 }
                 else
                 {
