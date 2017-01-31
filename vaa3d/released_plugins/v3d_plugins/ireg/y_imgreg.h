@@ -3416,7 +3416,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
             }
             else
             {
-                if(tex-tbx > bx - ex)
+                if(tex-tbx > ex - bx)
                 {
                     bx = tbx;
                     ex = tex;
@@ -3466,7 +3466,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
             }
             else
             {
-                if(tey-tby > by - ey)
+                if(tey-tby > ey - by)
                 {
                     by = tby;
                     ey = tey;
@@ -3515,7 +3515,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
             }
             else
             {
-                if(tez-tbz > bz - ez)
+                if(tez-tbz > ez - bz)
                 {
                     bz = tbz;
                     ez = tez;
@@ -3528,6 +3528,8 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
         dz = REAL(tz)/REAL(ez - bz + 5);
 
         sampleratio = y_min<REAL>(dz, y_min<REAL>(dx, dy)); // isotropic
+
+        cout<<"downsampling ratio: "<<sampleratio<<" "<<dx<<" "<<dy<<" "<<dz<<endl;
 
         //
         bool b_isint=true;
