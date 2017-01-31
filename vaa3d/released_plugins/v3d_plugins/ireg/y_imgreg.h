@@ -3358,14 +3358,174 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
         return;
     }
 
+    // downsampling
     if( (sx>tx || sy>ty || sz>tz) && !b_skipsampling)
     {
         REAL dx, dy, dz;
         REAL sampleratio;
 
-        dx = REAL(tx)/REAL(sx);
-        dy = REAL(ty)/REAL(sy);
-        dz = REAL(tz)/REAL(sz);
+        Tidx x,y,z,c, ssx,ssy,ssz, ofz, ofy, idx, volsz;
+
+        REAL bx, ex, by, ey, bz, ez;
+        REAL tbx, tex, tby, tey, tbz, tez;
+
+        REAL sum;
+
+        //
+        for(c=0; c<sc; c++)
+        {
+            // yz plane
+            tbx = 0;
+            tex = sx;
+            bool found = false;
+
+            for(x=0; x<sx; x++)
+            {
+                sum = 0;
+                for(y=0; y<sy; y++)
+                {
+                    for(z=0; z<sz; z++)
+                    {
+                        sum += pIn.val4d(c, z, y, x);
+                    }
+                }
+
+                if(sum==0)
+                {
+                    if(!found)
+                    {
+                        tbx = x;
+                    }
+
+                    if(x<tex && x>tbx)
+                    {
+                        tex = x;
+                        break;
+                    }
+                }
+                else
+                {
+                    found = true;
+                }
+            }
+
+            if(c==0)
+            {
+                bx = tbx;
+                ex = tex;
+            }
+            else
+            {
+                if(tex-tbx > bx - ex)
+                {
+                    bx = tbx;
+                    ex = tex;
+                }
+            }
+
+
+            // xz plane
+            tby = 0;
+            tey = sy;
+            found = false;
+
+            for(y=0; y<sy; y++)
+            {
+                sum = 0;
+                for(x=0; x<sx; x++)
+                {
+                    for(z=0; z<sz; z++)
+                    {
+                        sum += pIn.val4d(c, z, y, x);
+                    }
+                }
+
+                if(sum==0)
+                {
+                    if(!found)
+                    {
+                        tby = y;
+                    }
+
+                    if(y<tey && y>tby)
+                    {
+                        tey = y;
+                        break;
+                    }
+                }
+                else
+                {
+                    found = true;
+                }
+            }
+
+            if(c==0)
+            {
+                by = tby;
+                ey = tey;
+            }
+            else
+            {
+                if(tey-tby > by - ey)
+                {
+                    by = tby;
+                    ey = tey;
+                }
+            }
+
+            // xy plane
+            tbz = 0;
+            tez = sz;
+            found = false;
+
+            for(z=0; z<sz; z++)
+            {
+                sum = 0;
+                for(y=0; y<sy; y++)
+                {
+                    for(x=0; x<sx; x++)
+                    {
+                        sum += pIn.val4d(c, z, y, x);
+                    }
+                }
+
+                if(sum==0)
+                {
+                    if(!found)
+                    {
+                        tbz = z;
+                    }
+
+                    if(z<tez && z>tbz)
+                    {
+                        tez = z;
+                        break;
+                    }
+                }
+                else
+                {
+                    found = true;
+                }
+            }
+
+            if(c==0)
+            {
+                bz = tbz;
+                ez = tez;
+            }
+            else
+            {
+                if(tez-tbz > bz - ez)
+                {
+                    bz = tbz;
+                    ez = tez;
+                }
+            }
+        }
+
+        dx = REAL(tx)/REAL(ex - bx + 5); // extra blank yz planes
+        dy = REAL(ty)/REAL(ey - by + 5);
+        dz = REAL(tz)/REAL(ez - bz + 5);
 
         sampleratio = y_min<REAL>(dz, y_min<REAL>(dx, dy)); // isotropic
 
@@ -3373,7 +3533,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
         bool b_isint=true;
         if(pOut.dt==4) b_isint = false;
 
-        Tidx x,y,z,c, ssx,ssy,ssz, ofz, ofy, idx, volsz;
+
 
         ssx = (REAL)sx*sampleratio;
         ssy = (REAL)sy*sampleratio;
