@@ -3759,6 +3759,7 @@ Y_IMAGE<Tdata, Tidx> :: Y_IMAGE()
     pImg=NULL;
     dims=NULL;
     centroid=NULL;
+    means=NULL;
     totalplxs=0;
 }
 
@@ -3775,6 +3776,7 @@ void Y_IMAGE<Tdata, Tidx> :: clean()
     y_del<Tidx>(dims);
 
     y_del<REAL>(centroid);
+    y_del<REAL>(means);
 
     return;
 }
@@ -3919,6 +3921,62 @@ void Y_IMAGE<Tdata, Tidx> :: getMassCenter()
             centroid[0] /= sum;
             centroid[1] /= sum;
             centroid[2] /= sum;
+
+            break;
+        case D5D:
+
+            break;
+        default:
+            printf("Dimensions too complicated.\n");
+        }
+    }
+}
+
+// get mean intensity values
+template<class Tdata, class Tidx>
+void Y_IMAGE<Tdata, Tidx> :: getMeanIntensityValue()
+{
+    if(pImg && dims)
+    {
+        switch(dimt)
+        {
+        case D1D:
+
+            // X
+
+            break;
+        case D2D:
+
+            // XY
+
+            break;
+        case D3D:
+
+            // XYZ
+
+        case D4D:
+
+            // XYZC
+
+            y_new<REAL, Tidx>(means, dims[3]);
+            Tidx szVolume = dims[0]*dims[1]*dims[2];
+
+            for(Tidx c=0; c<dims[3]; c++)
+            {
+                means[c] = 0;
+
+                for(Tidx z=0; z<dims[2]; z++)
+                {
+                    for(Tidx y=0; y<dims[1]; y++)
+                    {
+                        for(Tidx x=0; x<dims[0]; x++)
+                        {
+                            means[c] += (REAL)(val4d(c, z, y, x));
+                        }
+                    }
+                }
+                means[c] /= szVolume;
+            }
 
             break;
         case D5D:

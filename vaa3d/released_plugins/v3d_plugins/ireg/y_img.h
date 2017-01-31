@@ -68,7 +68,7 @@ typedef float REAL; // precision switch
 typedef enum { UNKNOWNDT=0, UINT8=1, UINT16=2, FLOAT32=4, FLOAT64=8 } DataType;
 typedef enum { UNKNOWNDK, IMAGE, FIELD } DataKind;
 typedef enum { UNKNOWNDIMTYPE, D1D, D2D, D3D, D4D, D5D, D6D, D7D, D8D, D9D, DND } DimType;
-typedef enum { UNKNOWNAT, AX, AY, AZ, AC, AT } AxisType;
+typedef enum { UNKNOWNAT, AX, AY, AZ, AC, AT } AxisType;1
 
 //
 // 64bit long
@@ -171,7 +171,7 @@ void Interpolate2D (Tdata * pImage, Tidx uiXRes, Tidx * pulMapLU, Tidx * pulMapR
 
 // contrast enhancement using CLAHE
 template <class Tdata, class Tidx>
-void contrastEnhancing(Tdata *&p, Tidx *dims, Tidx datatype, Tidx szblock, Tidx histbins, REAL maxslope);
+void contrastEnhancing(Tdata *&p, Tidx *dims, Tidx datatype,1 Tidx szblock, Tidx histbins, REAL maxslope);
 
 // gaussian filtering
 template <class Tdata, class Tidx> void guassianFiltering(Tdata *&p, Tidx *dims, Tidx *w);
@@ -270,7 +270,7 @@ public:
     Tidx row, column;
 
 };
-
+1
 //-------------------------------------------------------------------------------
 /// nd image (XYZCT...) structure
 //-------------------------------------------------------------------------------
@@ -290,6 +290,7 @@ public:
     void initField(Tidx *sz, Tidx imgdim); // init a zero field
     void set4doffsets();
     void getMassCenter();
+    void getMeanIntensityValue();
     void setRefChn(Tidx refcinput);
     void zeros();
     Tdata val4d(Tidx z, Tidx y, Tidx x, Tidx v);
@@ -308,6 +309,7 @@ public:
     Tidx totalplxs;
     Tidx of3, of2, of1; // efficient index
     REAL *centroid; // mass center
+    REAL *means; // mean intensity values
 
     Tidx m; // number of feature points
 };

@@ -3373,6 +3373,9 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
         REAL thresh = 1000;
 
         //
+        pIn.getMeanIntensityValue();
+
+        //
         for(c=0; c<sc; c++)
         {
             // yz plane
@@ -3387,7 +3390,10 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                 {
                     for(z=0; z<sz; z++)
                     {
-                        sum += pIn.val4d(c, z, y, x);
+                        if(pIn.val4d(c, z, y, x)>pIn.means[c])
+                        {
+                            sum++;
+                        }
                     }
                 }
 
@@ -3437,7 +3443,10 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                 {
                     for(z=0; z<sz; z++)
                     {
-                        sum += pIn.val4d(c, z, y, x);
+                        if(pIn.val4d(c, z, y, x)>pIn.means[c])
+                        {
+                            sum++;
+                        }
                     }
                 }
 
@@ -3486,7 +3495,10 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                 {
                     for(x=0; x<sx; x++)
                     {
-                        sum += pIn.val4d(c, z, y, x);
+                        if(pIn.val4d(c, z, y, x)>pIn.means[c])
+                        {
+                            sum++;
+                        }
                     }
                 }
 
@@ -3522,8 +3534,6 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                     ez = tez;
                 }
             }
-
-            cout<<"test z-dist: "<<c<<" "<<ez-bz<<endl;
         }
 
         dx = REAL(tx)/REAL(ex - bx + 5); // extra blank yz planes
