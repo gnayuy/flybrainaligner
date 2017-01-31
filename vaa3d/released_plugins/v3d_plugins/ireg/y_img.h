@@ -171,7 +171,7 @@ void Interpolate2D (Tdata * pImage, Tidx uiXRes, Tidx * pulMapLU, Tidx * pulMapR
 
 // contrast enhancement using CLAHE
 template <class Tdata, class Tidx>
-void contrastEnhancing(Tdata *&p, Tidx *dims, Tidx datatype,1 Tidx szblock, Tidx histbins, REAL maxslope);
+void contrastEnhancing(Tdata *&p, Tidx *dims, Tidx datatype, Tidx szblock, Tidx histbins, REAL maxslope);
 
 // gaussian filtering
 template <class Tdata, class Tidx> void guassianFiltering(Tdata *&p, Tidx *dims, Tidx *w);
