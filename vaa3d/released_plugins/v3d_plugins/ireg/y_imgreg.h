@@ -3534,6 +3534,9 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                     ez = tez;
                 }
             }
+
+            //
+            cout<<"test ... "<<c<<" "<<pIn.means[c]<<" "<<ex-bx<<" "<<ey-by<<" "<<ez-bz<<endl;
         }
 
         dx = REAL(tx)/REAL(ex - bx + 5); // extra blank yz planes
