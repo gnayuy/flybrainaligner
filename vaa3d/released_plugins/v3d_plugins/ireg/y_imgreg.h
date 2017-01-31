@@ -3501,7 +3501,7 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
                     {
                         tez = z;
                         break;
-                    }bool
+                    }
                 }
                 else
                 {
