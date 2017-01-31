@@ -4541,7 +4541,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                                 b_interptype = atoi( argv[i+1] );
                                 i++;
                             }
-                            else if(!strcmp(key, "skip"))
+                            else if (!strcmp(key, "y")) // skip sampling
                             {
                                 b_skipsampling = atoi( argv[i+1] )!=0?true:false;
                                 i++;
