@@ -68,7 +68,7 @@ typedef float REAL; // precision switch
 typedef enum { UNKNOWNDT=0, UINT8=1, UINT16=2, FLOAT32=4, FLOAT64=8 } DataType;
 typedef enum { UNKNOWNDK, IMAGE, FIELD } DataKind;
 typedef enum { UNKNOWNDIMTYPE, D1D, D2D, D3D, D4D, D5D, D6D, D7D, D8D, D9D, DND } DimType;
-typedef enum { UNKNOWNAT, AX, AY, AZ, AC, AT } AxisType;1
+typedef enum { UNKNOWNAT, AX, AY, AZ, AC, AT } AxisType;
 
 //
 // 64bit long
