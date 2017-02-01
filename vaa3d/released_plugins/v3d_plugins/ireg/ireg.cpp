@@ -14842,8 +14842,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                     else
                     {
                         cout<<"parsing ..."<<key<<i<<"Unknown command. Type 'v3d -x plugin_name -f function_name' for usage"<<endl;
-                        return false;bz = tbz;
-                        ez = tez;
+                        return false;
                     }
                 }
             }
@@ -14944,6 +14943,10 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
             pSub.getBoundingBox();
 
             V3DLONG sx, sy, sz, sc;
+
+            sx = y_max<V3DLONG>(pTar.bex - pTar.bbx, pSub.bex - pSub.bbx);
+            sy = y_max<V3DLONG>(pTar.bey - pTar.bby, pSub.bey - pSub.bby);
+            sz = y_max<V3DLONG>(pTar.bez - pTar.bbz, pSub.bez - pSub.bbz);
 
 
         }
