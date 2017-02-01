@@ -14860,12 +14860,12 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                 QString qs_basename_input=QFileInfo(qs_filename_img_sub).baseName();
                 QString qs_pathname_input=QFileInfo(qs_filename_img_sub).path();
 
-                qs_filename_output_sub=qs_pathname_input+"/"+qs_basename_input+"_rs.nii";
+                qs_filename_output_sub=qs_pathname_input+"/"+qs_basename_input+"_rs.v3draw";
 
                 qs_basename_input=QFileInfo(qs_filename_img_tar).baseName();
                 qs_pathname_input=QFileInfo(qs_filename_img_tar).path();
 
-                qs_filename_output_tar=qs_pathname_input+"/"+qs_basename_input+"_rs.nii";
+                qs_filename_output_tar=qs_pathname_input+"/"+qs_basename_input+"_rs.v3draw";
             }
 
         }
@@ -14932,23 +14932,65 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
 
         if(datatype_img1==UINT8 && datatype_img2==UINT8) // 8-bit
         {
+            // assuming tar color = 1 sub color >= 1
+
             //
             Y_IMG_UINT8 pTar;
-            pIn.setImage(p1dImg1, sz_img1, 4);
+            pTar.setImage(p1dImg1, sz_img1, 4);
             pTar.getBoundingBox();
 
             //
             Y_IMG_UINT8 pSub;
-            pIn.setImage(p1dImg2, sz_img2, 4);
+            pSub.setImage(p1dImg2, sz_img2, 4);
             pSub.getBoundingBox();
 
-            V3DLONG sx, sy, sz, sc;
+            V3DLONG szimg[4];
 
-            sx = y_max<V3DLONG>(pTar.bex - pTar.bbx, pSub.bex - pSub.bbx);
-            sy = y_max<V3DLONG>(pTar.bey - pTar.bby, pSub.bey - pSub.bby);
-            sz = y_max<V3DLONG>(pTar.bez - pTar.bbz, pSub.bez - pSub.bbz);
+            szimg[0] = y_max<V3DLONG>(pTar.bex - pTar.bbx, pSub.bex - pSub.bbx);
+            szimg[1] = y_max<V3DLONG>(pTar.bey - pTar.bby, pSub.bey - pSub.bby);
+            szimg[2] = y_max<V3DLONG>(pTar.bez - pTar.bbz, pSub.bez - pSub.bbz);
+            szimg[3] = 1;
+
+            V3DLONG totalplxs = szimg[0]*szimg[1]*szimg[2];
 
 
+            // tar
+            unsigned char *p_tar = NULL;
+            y_new<unsigned char, V3DLONG>(p_tar, totalplxs);
+
+            Y_IMG_UINT8 pTarRs;
+            pTarRs.setImage(p_tar, szimg, 4);
+
+            resizeImage<unsigned char, V3DLONG, Y_IMG_UINT8>(pTarRs, pTar, 0, true);
+
+            //
+            /// save
+            if(!saveImage(qPrintable(qs_filename_output_tar),(unsigned char *)(pTarRs.pImg),szimg,1))
+            {
+                printf("ERROR: saveImage failed!\n");
+                return false;
+            }
+
+
+            // sub
+            szimg[3] = y_max<V3DLONG>(sz_img1[3], sz_img2[3]);
+            totalplxs *= szimg[3];
+
+            unsigned char *p_sub = NULL;
+            y_new<unsigned char, V3DLONG>(p_sub, totalplxs);
+
+            Y_IMG_UINT8 pSubRs;
+            pSubRs.setImage(p_sub, szimg, 4);
+
+            resizeImage<unsigned char, V3DLONG, Y_IMG_UINT8>(pSubRs, pSub, 0, true);
+
+            //
+            /// save
+            if(!saveImage(qPrintable(qs_filename_output_sub),(unsigned char *)(pSubRs.pImg),szimg,1))
+            {
+                printf("ERROR: saveImage failed!\n");
+                return false;
+            }
         }
         else
         {
