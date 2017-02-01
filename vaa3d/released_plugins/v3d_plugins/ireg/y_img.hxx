@@ -3769,7 +3769,7 @@ Y_IMAGE<Tdata, Tidx> :: Y_IMAGE()
 template<class Tdata, class Tidx>
 Y_IMAGE<Tdata, Tidx> :: ~Y_IMAGE()
 {
-    clean();
+    // clean();
 }
 
 // clean

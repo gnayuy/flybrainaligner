@@ -4734,8 +4734,6 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
 
             // de-alloc
             if(!b_uint8) y_del<unsigned char>(p1dImg2);
-            //y_del<V3DLONG>(sz_img2);
-            //if(!b_uint8 && p_sub){delete []p_sub; p_sub=NULL;}
 
             //
             /// save
@@ -4744,6 +4742,10 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                 printf("ERROR: saveImage failed!\n");
                 return false;
             }
+
+            // de-alloc
+            pIn.clean();
+            pOut.clean();
         }
         else if(datatype_img2==UINT16)
         {
@@ -4766,8 +4768,6 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
 
             // de-alloc
             if(!b_uint8) y_del<unsigned char>(p1dImg2);
-            //y_del<V3DLONG>(sz_img2);
-            //if(!b_uint8 && p_sub){delete []p_sub; p_sub=NULL;}
 
             //
             /// save
@@ -4776,12 +4776,13 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                 printf("ERROR: saveImage failed!\n");
                 return false;
             }
+
+            // de-alloc
+            pIn.clean();
+            pOut.clean();
         }
 
-        // de-alloc
-        //y_del<unsigned char>(p_subrec);
-        //y_del<V3DLONG>(sz_img1);
-
+        //
         return true;
     }
     else if (func_name == tr("MultiLabelImageConverter"))
@@ -5239,6 +5240,16 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                     resize<V3DLONG, Y_IMG_UINT8, Y_IMG_UINT8>(pOut, pIn, SAMPLE);
                 }
 
+                //
+                if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(pResample),szResample,1))
+                {
+                    printf("ERROR: saveImage failed!\n");
+                    return false;
+                }
+
+                // de-alloc
+                pIn.clean();
+                pOut.clean();
             }
             else if(datatype_img1==UINT16)
             {
@@ -5264,6 +5275,17 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                     // Linear
                     resize<V3DLONG, Y_IMG_UINT16, Y_IMG_UINT16>(pOut, pIn, SAMPLE);
                 }
+
+                //
+                if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(pResample),szResample,2))
+                {
+                    printf("ERROR: saveImage failed!\n");
+                    return false;
+                }
+
+                // de-alloc
+                pIn.clean();
+                pOut.clean();
             }
             else if(datatype_img1==FLOAT32)
             {
@@ -5289,6 +5311,17 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                     // Linear
                     resize<V3DLONG, Y_IMG_REAL, Y_IMG_REAL>(pOut, pIn, SAMPLE);
                 }
+
+                //
+                if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(pResample),szResample,4))
+                {
+                    printf("ERROR: saveImage failed!\n");
+                    return false;
+                }
+
+                // de-alloc
+                pIn.clean();
+                pOut.clean();
             }
             else
             {
@@ -5297,49 +5330,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
             }
         }
 
-        // de-alloc
-        y_del<unsigned char>(p1dImg1);
-        y_del<V3DLONG>(sz_img1);
-
         //
-        /// save
-        if(datatype_img1==UINT8)
-        {
-            //
-            if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(pResample),szResample,1))
-            {
-                printf("ERROR: saveImage failed!\n");
-                return false;
-            }
-        }
-        else if(datatype_img1==UINT16)
-        {
-            //
-            if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(pResample),szResample,2))
-            {
-                printf("ERROR: saveImage failed!\n");
-                return false;
-            }
-        }
-        else if(datatype_img1==FLOAT32)
-        {
-            //
-            if(!saveImage(qPrintable(qs_filename_output),(unsigned char *)(pResample),szResample,4))
-            {
-                printf("ERROR: saveImage failed!\n");
-                return false;
-            }
-        }
-        else
-        {
-            cout<<"Invalid input datatype!"<<endl;
-            return false;
-        }
-
-        // de-alloc
-        y_del<unsigned char>(pResample);
-        y_del<V3DLONG>(szResample);
-
         return true;
     }
     else if (func_name == tr("iContrastEnhancer"))
