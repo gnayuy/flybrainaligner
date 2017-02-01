@@ -3776,12 +3776,23 @@ Y_IMAGE<Tdata, Tidx> :: ~Y_IMAGE()
 template<class Tdata, class Tidx>
 void Y_IMAGE<Tdata, Tidx> :: clean()
 {
-    y_del<Tdata>(pImg);
-    y_del<Tidx>(dims);
+    if(pImg){
+        delete [] pImg;
+    }
 
-    y_del<REAL>(centroid);
-    y_del<REAL>(means);
+    if(dims){
+        delete [] dims;
+    }
 
+    if(centroid){
+        delete [] centroid;
+    }
+
+    if(means){
+        delete [] means;
+    }
+
+    //
     return;
 }
 
