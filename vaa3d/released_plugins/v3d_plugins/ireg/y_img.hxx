@@ -3939,6 +3939,7 @@ void Y_IMAGE<Tdata, Tidx> :: getMeanIntensityValue()
     if(pImg && dims)
     {
         Tidx szVolume = dims[0]*dims[1]*dims[2];
+        Tidx nonZeros = 0;
 
         switch(dimt)
         {
@@ -3973,11 +3974,17 @@ void Y_IMAGE<Tdata, Tidx> :: getMeanIntensityValue()
                     {
                         for(Tidx x=0; x<dims[0]; x++)
                         {
-                            means[c] += (REAL)(val4d(c, z, y, x));
+                            REAL val = (REAL)(val4d(c, z, y, x));
+
+                            if(val>0)
+                            {
+                                means[c] += val;
+                                nonZeros++;
+                            }
                         }
                     }
                 }
-                means[c] /= szVolume;
+                means[c] /= nonZeros;
             }
 
             break;
