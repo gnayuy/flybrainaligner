@@ -286,7 +286,8 @@ QStringList IRegPlugin::funclist() const
                          << tr("marker2volume")
                          << tr("valueReplace")
                          << tr("absOrient")
-                         << tr("extractVOI");
+                         << tr("extractVOI")
+                         << tr("genVOIs");
 }
 
 bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & input, V3DPluginArgList & output, V3DPluginCallback2 & callback,  QWidget * parent)
@@ -14733,6 +14734,227 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
         y_del2<unsigned char, V3DLONG>(p1dImg1, sz_img1);
         y_del<unsigned char>(pOut);
         y_del<unsigned char>(p1dMask);
+
+        //
+        return true;
+    }
+    else if (func_name == tr("genVOIs"))
+    {
+        // input  : subject and target
+        // output : resize both into the same size
+
+        if(input.size()<1 || (input.size()==1 && output.size()<1) ) // no inputs
+        {
+            //print Help info
+            printf("\nError occurred!\n");
+            printf("\nUsage: vaa3d -x ireg -f genVOIs -p \"#s <subject> #t <target>\"!\n");
+            return true;
+        }
+
+        vector<char*> * infilelist;
+        vector<char*> * paralist;
+        vector<char*> * outfilelist;
+
+        char * infile = NULL; //input_image_file
+        char * paras = NULL; // parameters
+        char * outfile = NULL; // output_name
+
+        if(input.size()>0) { infilelist = (vector<char*> *)(input.at(0).p); if(!infilelist->empty()) { infile = infilelist->at(0); }} // specify input
+        if(output.size()>0) { outfilelist = (vector<char*> *)(output.at(0).p); if(!outfilelist->empty()) { outfile = outfilelist->at(0); }}  // specify output
+        if(input.size()>1) { paralist = (vector<char*> *)(input.at(1).p); paras =  paralist->at(0);} // parameters
+
+        // inputs
+        QString qs_filename_img_sub, qs_filename_img_tar;
+
+        // outputs
+        QString qs_filename_output_sub, qs_filename_output_tar;
+
+        // parsing parameters
+        if(paras)
+        {
+            int argc = 0;
+            int len = strlen(paras);
+            int posb[1000];
+
+            for(int i = 0; i < len; i++)
+            {
+                if(i==0 && paras[i] != ' ' && paras[i] != '\t')
+                {
+                    posb[argc++] = i;
+                }
+                else if((paras[i-1] == ' ' || paras[i-1] == '\t') && (paras[i] != ' ' && paras[i] != '\t'))
+                {
+                    posb[argc++] = i;
+                }
+            }
+
+            char **argv = NULL;
+            try
+            {
+                argv =  new char* [argc];
+                for(int i = 0; i < argc; i++)
+                {
+                    argv[i] = paras + posb[i];
+                }
+            }
+            catch(...)
+            {
+                printf("\nError: fail to allocate memory!\n");
+                return false;
+            }
+
+            for(int i = 0; i < len; i++)
+            {
+                if(paras[i]==' ' || paras[i]=='\t')
+                    paras[i]='\0';
+            }
+
+            char* key;
+            for(int i=0; i<argc; i++)
+            {
+                if(i+1 != argc) // check that we haven't finished parsing yet
+                {
+                    key = argv[i];
+
+                    qDebug()<<">>key ..."<<key;
+
+                    if (*key == '#')
+                    {
+                        while(*++key)
+                        {
+                            if (!strcmp(key, "t"))
+                            {
+                                qs_filename_img_tar = QString( argv[i+1] );
+                                i++;
+                            }
+                            else if (!strcmp(key, "s"))
+                            {
+                                qs_filename_img_sub = QString( argv[i+1] );
+                                i++;
+                            }
+                            else
+                            {
+                                cout<<"parsing ..."<<key<<i<<"Unknown command. Type 'v3d -x plugin_name -f function_name' for usage"<<endl;
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        cout<<"parsing ..."<<key<<i<<"Unknown command. Type 'v3d -x plugin_name -f function_name' for usage"<<endl;
+                        return false;bz = tbz;
+                        ez = tez;
+                    }
+                }
+            }
+
+            // error check
+            if(qs_filename_img_tar==NULL || qs_filename_img_sub==NULL)
+            {
+                printf("\nERROR: invalid input file name (target or subject)!\n");
+                return false;
+            }
+
+            //
+            if(!outfile)
+            {
+                QString qs_basename_input=QFileInfo(qs_filename_img_sub).baseName();
+                QString qs_pathname_input=QFileInfo(qs_filename_img_sub).path();
+
+                qs_filename_output_sub=qs_pathname_input+"/"+qs_basename_input+"_rs.nii";
+
+                qs_basename_input=QFileInfo(qs_filename_img_tar).baseName();
+                qs_pathname_input=QFileInfo(qs_filename_img_tar).path();
+
+                qs_filename_output_tar=qs_pathname_input+"/"+qs_basename_input+"_rs.nii";
+            }
+
+        }
+
+        /// load images
+
+        // target
+        V3DLONG *sz_img1 = 0;
+        int datatype_img1 = 0;
+        unsigned char* p1dImg1 = 0;
+
+        if(QFileInfo(qs_filename_img_tar).suffix().toUpper().compare("LSM") == 0)
+        {
+            // Mylib
+            int pixelnbits = 1;
+            if(loadTif2StackMylib(const_cast<char *>(qs_filename_img_tar.toStdString().c_str()), p1dImg1, sz_img1, datatype_img1, pixelnbits))
+            {
+                printf("ERROR: loadImage() fails.\n");
+                y_del2<unsigned char, V3DLONG>(p1dImg1, sz_img1);
+                return false;
+            }
+        }
+        else
+        {
+            // libtif
+            if(!loadImage(const_cast<char *>(qs_filename_img_tar.toStdString().c_str()),p1dImg1,sz_img1,datatype_img1))
+            {
+                printf("ERROR: loadImage() fails.\n");
+                y_del2<unsigned char, V3DLONG>(p1dImg1, sz_img1);
+                return false;
+            }
+        }
+
+        // subject
+        V3DLONG *sz_img2 = 0;
+        int datatype_img2 = 0;
+        unsigned char* p1dImg2 = 0;
+
+        if(QFileInfo(qs_filename_img_sub).suffix().toUpper().compare("LSM") == 0)
+        {
+            // Mylib
+            int pixelnbits = 1;
+            if(loadTif2StackMylib(const_cast<char *>(qs_filename_img_sub.toStdString().c_str()), p1dImg2, sz_img2, datatype_img2, pixelnbits))
+            {
+                printf("ERROR: loadImage() fails.\n");
+                y_del2<unsigned char, V3DLONG>(p1dImg2, sz_img2);
+                return false;
+            }
+        }
+        else
+        {
+            // libtif
+            if(!loadImage(const_cast<char *>(qs_filename_img_sub.toStdString().c_str()),p1dImg2,sz_img2,datatype_img2))
+            {
+                printf("ERROR: loadImage() fails.\n");
+                y_del2<unsigned char, V3DLONG>(p1dImg2, sz_img2);
+                return false;
+            }
+        }
+
+        //
+        /// resize
+        //
+
+        if(datatype_img1==UINT8 && datatype_img2==UINT8) // 8-bit
+        {
+            //
+            Y_IMG_UINT8 pTar;
+            pIn.setImage(p1dImg1, sz_img1, 4);
+            pTar.getBoundingBox();
+
+            //
+            Y_IMG_UINT8 pSub;
+            pIn.setImage(p1dImg2, sz_img2, 4);
+            pSub.getBoundingBox();
+
+            V3DLONG sx, sy, sz, sc;
+
+
+        }
+        else
+        {
+            cout<<"unsupported datatype\n";
+            return false;
+        }
+
+        // de-alloc
+
 
         //
         return true;

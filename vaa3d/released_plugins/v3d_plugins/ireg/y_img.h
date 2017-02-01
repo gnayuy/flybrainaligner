@@ -292,6 +292,7 @@ public:
     void getMassCenter();
     void getMeanIntensityValue();
     void setRefChn(Tidx refcinput);
+    void getBoundingBox();
     void zeros();
     Tdata val4d(Tidx z, Tidx y, Tidx x, Tidx v);
     Tidx idx4d(Tidx z, Tidx y, Tidx x, Tidx v);
@@ -310,6 +311,7 @@ public:
     Tidx of3, of2, of1; // efficient index
     REAL *centroid; // mass center
     REAL *means; // mean intensity values
+    Tidx bbx, bex, bby, bey, bbz, bez; // bounding box
 
     Tidx m; // number of feature points
 };

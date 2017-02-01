@@ -3761,6 +3761,9 @@ Y_IMAGE<Tdata, Tidx> :: Y_IMAGE()
     centroid=NULL;
     means=NULL;
     totalplxs=0;
+    bbx=0; bex=1;
+    bby=0; bey=1;
+    bbz=0; bez=1;
 }
 
 template<class Tdata, class Tidx>
@@ -3985,6 +3988,206 @@ void Y_IMAGE<Tdata, Tidx> :: getMeanIntensityValue()
                     }
                 }
                 means[c] /= nonZeros;
+            }
+
+            break;
+        case D5D:
+
+            break;
+        default:
+            printf("Dimensions too complicated.\n");
+        }
+    }
+}
+
+// get mean intensity values
+template<class Tdata, class Tidx>
+void Y_IMAGE<Tdata, Tidx> :: getBoundingBox()
+{
+    if(pImg && dims)
+    {
+        Tidx bx, ex, by, ey, bz, ez, sum;
+        Tidx x, y, z, c;
+
+        switch(dimt)
+        {
+        case D1D:
+
+            // X
+
+            break;
+        case D2D:
+
+            // XY
+
+            break;
+        case D3D:
+
+            // XYZ
+
+        case D4D:
+
+            // XYZC
+
+            //
+            for(c=0; c<dims[3]; c++)
+            {
+                // yz plane
+                bx = 0;
+                ex = dims[0];
+                bool found = false;
+
+                for(x=0; x<dims[0]; x++)
+                {
+                    sum = 0;
+                    for(y=0; y<dims[1]; y++)
+                    {
+                        for(z=0; z<dims[2]; z++)
+                        {
+                            if(val4d(c, z, y, x))
+                            {
+                                sum++;
+                            }
+                        }
+                    }
+
+                    if(sum<1)
+                    {
+                        if(!found)
+                        {
+                            bx = x;
+                        }
+
+                        if(x<ex && x>bx)
+                        {
+                            ex = x;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        found = true;
+                    }
+                }
+
+                if(c==0)
+                {
+                    bbx = bx;
+                    bex = ex;
+                }
+                else
+                {
+                    if(ex-bx > bex - bbx)
+                    {
+                        bbx = bx;
+                        bex = ex;
+                    }
+                }
+
+
+                // xz plane
+                by = 0;
+                ey = dims[1];
+                found = false;
+
+                for(y=0; y<dims[1]; y++)
+                {
+                    sum = 0;
+                    for(x=0; x<dims[0]; x++)
+                    {
+                        for(z=0; z<dims[2]; z++)
+                        {
+                            if(val4d(c, z, y, x))
+                            {
+                                sum++;
+                            }
+                        }
+                    }
+
+                    if(sum<1)
+                    {
+                        if(!found)
+                        {
+                            by = y;
+                        }
+
+                        if(y<ey && y>by)
+                        {
+                            ey = y;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        found = true;
+                    }
+                }
+
+                if(c==0)
+                {
+                    bby = by;
+                    bey = ey;
+                }
+                else
+                {
+                    if(ey-by > bey - bby)
+                    {
+                        bby = by;
+                        bey = ey;
+                    }
+                }
+
+                // xy plane
+                bz = 0;
+                ez = dims[2];
+                found = false;
+
+                for(z=0; z<dims[2]; z++)
+                {
+                    sum = 0;
+                    for(y=0; y<dims[1]; y++)
+                    {
+                        for(x=0; x<dims[0]; x++)
+                        {
+                            if(val4d(c, z, y, x))
+                            {
+                                sum++;
+                            }
+                        }
+                    }
+
+                    if(sum<1)
+                    {
+                        if(!found)
+                        {
+                            bz = z;
+                        }
+
+                        if(z<ez && z>bz)
+                        {
+                            ez = z;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        found = true;
+                    }
+                }
+
+                if(c==0)
+                {
+                    bbz = bz;
+                    bez = ez;
+                }
+                else
+                {
+                    if(ez-bz > bez - bbz)
+                    {
+                        bbz = bz;
+                        bez = ez;
+                    }
+                }
             }
 
             break;
