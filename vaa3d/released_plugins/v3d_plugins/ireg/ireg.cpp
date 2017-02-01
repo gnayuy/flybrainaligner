@@ -14932,7 +14932,7 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
         /// resize
         //
 
-        V3DLONG extraVoxels = 32;
+        V3DLONG extraVoxels = 64;
 
         if(datatype_img1==UINT8 && datatype_img2==UINT8) // 8-bit
         {
