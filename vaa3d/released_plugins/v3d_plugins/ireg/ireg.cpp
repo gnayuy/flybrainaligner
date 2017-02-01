@@ -14932,6 +14932,8 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
         /// resize
         //
 
+        V3DLONG extraVoxels = 32;
+
         if(datatype_img1==UINT8 && datatype_img2==UINT8) // 8-bit
         {
             // assuming tar color = 1 sub color >= 1
@@ -14948,9 +14950,9 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
 
             V3DLONG szimg[4];
 
-            szimg[0] = y_max<V3DLONG>(pTar.bex - pTar.bbx, pSub.bex - pSub.bbx);
-            szimg[1] = y_max<V3DLONG>(pTar.bey - pTar.bby, pSub.bey - pSub.bby);
-            szimg[2] = y_max<V3DLONG>(pTar.bez - pTar.bbz, pSub.bez - pSub.bbz);
+            szimg[0] = y_max<V3DLONG>(pTar.bex - pTar.bbx, pSub.bex - pSub.bbx) + extraVoxels;
+            szimg[1] = y_max<V3DLONG>(pTar.bey - pTar.bby, pSub.bey - pSub.bby) + extraVoxels;
+            szimg[2] = y_max<V3DLONG>(pTar.bez - pTar.bbz, pSub.bez - pSub.bbz) + extraVoxels;
             szimg[3] = 1;
 
             V3DLONG totalplxs = szimg[0]*szimg[1]*szimg[2];
@@ -14972,7 +14974,6 @@ bool IRegPlugin::dofunc(const QString & func_name, const V3DPluginArgList & inpu
                 printf("ERROR: saveImage failed!\n");
                 return false;
             }
-
 
             // sub
             szimg[3] = y_max<V3DLONG>(sz_img1[3], sz_img2[3]);
