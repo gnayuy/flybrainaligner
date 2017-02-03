@@ -845,7 +845,7 @@ $DIR/createVerificationMovie.sh -c $CONFIGFILE -k $TOOLDIR -w $WORKDIR -s $SUBSX
 ### Brains
 
 if [[ -f "$SUBSXALINGED" ]]; then
-META=${OUTBRAINSSX}"/Aligned63xScale.properties"
+META=${OUTBRAINS}"/Aligned63xScale.properties"
 echo "alignment.stack.filename=Aligned63xScale.v3draw" >> $META
 echo "alignment.image.channels=$INPUT1_CHANNELS" >> $META
 echo "alignment.image.refchan=$INPUT1_REF" >> $META
