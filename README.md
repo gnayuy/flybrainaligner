@@ -22,7 +22,7 @@ cd vaa3d
 ./build.cmake -h5j install
 ```
 
-with shell script:
+With shell script:
 ```
 cd vaa3d
 ./build.linux -B -m -j8
