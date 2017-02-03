@@ -3551,8 +3551,6 @@ void resizeImage(Y_IMG_TYPE &pOut, Y_IMG_TYPE pIn, int inttype, bool b_skipsampl
         bool b_isint=true;
         if(pOut.dt==4) b_isint = false;
 
-
-
         ssx = (REAL)sx*sampleratio;
         ssy = (REAL)sy*sampleratio;
         ssz = (REAL)sz*sampleratio;

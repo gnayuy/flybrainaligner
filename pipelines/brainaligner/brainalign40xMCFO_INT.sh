@@ -282,7 +282,7 @@ echo " SUBSXRS: $SUBSXRS exists"
 else
 #---exe---#
 message " Resizing the 63x subject to 63x target "
-time $Vaa3D -x ireg -f resizeImage -o $SUBSXRS -p "#s $SUBSXIS #t $TARSXEXT"
+time $Vaa3D -x ireg -f resizeImage -o $SUBSXRS -p "#s $SUBSXIS #t $TARSXEXT #y 1"
 fi
 
 SUBSXRSRFC=${OUTPUT}"/subsxRsRefChn.v3draw"
@@ -560,7 +560,7 @@ AFFINEMATRIXLOCAL=${OUTPUT}"/ccmiAffine.txt"
 FWDDISPFIELD=${OUTPUT}"/ccmiWarp.nii.gz"
 BWDDISPFIELD=${OUTPUT}"/ccmiInverseWarp.nii.gz"
 
-MAXITERSCC=30x90x20
+MAXITERSCC=100x70x50x0
 
 if ( is_file_exist "$AFFINEMATRIXLOCAL" )
 then
@@ -655,7 +655,7 @@ echo " SUBSXALINGED: $SUBSXALINGED exists"
 else
 #---exe---#
 message " Resize the brain to the tamplate's space"
-time $Vaa3D -x ireg -f resizeImage -o $SUBSXALINGED -p "#s $SUBSXDFRMD #t $TARSX"
+time $Vaa3D -x ireg -f resizeImage -o $SUBSXALINGED -p "#s $SUBSXDFRMD #t $TARSX #y 1"
 fi
 
 #
@@ -710,7 +710,7 @@ echo " NEURONSYFLIPISRS: $NEURONSYFLIPISRS exists"
 else
 #---exe---#
 message " Resizing the the neurons to the target "
-time $Vaa3D -x ireg -f resizeImage -o $NEURONSYFLIPISRS -p "#s $NEURONSYFLIPIS #t $TARSXEXT #k 1 #i 1"
+time $Vaa3D -x ireg -f resizeImage -o $NEURONSYFLIPISRS -p "#s $NEURONSYFLIPIS #t $TARSXEXT #k 1 #i 1 #y 1"
 fi
 
 NEURONSYFLIPISRSRT=${STRN}"_yflipIsRsRot.v3draw"
@@ -740,7 +740,7 @@ echo " NEURONSYFLIPISRSRTAFFRS: $NEURONSYFLIPISRSRTAFFRS exists"
 else
 #---exe---#
 message " Resize the neurons "
-time $Vaa3D -x ireg -f resizeImage -o $NEURONSYFLIPISRSRTAFFRS -p "#s $NEURONSYFLIPISRSRTAFF #t $TARSXRS"
+time $Vaa3D -x ireg -f resizeImage -o $NEURONSYFLIPISRSRTAFFRS -p "#s $NEURONSYFLIPISRSRTAFF #t $TARSXRS #y 1"
 fi
 
 NEURONSNII=${STRN}"_yflipIsRsRotAffRs_c0.nii"
@@ -777,7 +777,7 @@ echo " SXNEURONALIGNEDRS: $SXNEURONALIGNEDRS exists"
 else
 #---exe---#
 message " Resize the neurons to the tamplate's space"
-time $Vaa3D -x ireg -f resizeImage -o $SXNEURONALIGNEDRS -p "#s $NEURONALIGNEDYFLIP #t $TARSX"
+time $Vaa3D -x ireg -f resizeImage -o $SXNEURONALIGNEDRS -p "#s $NEURONALIGNEDYFLIP #t $TARSX #y 1"
 fi
 
 if ( is_file_exist "$SXNEURONALIGNED" )
