@@ -531,36 +531,17 @@ message " Converting the target into Nifti image "
 time $Vaa3D -x ireg -f NiftiImageConverter -i $TARSXRS
 fi
 
-DSRATIO=0.5
-FIXEDDS=${OUTPUT}"/target_ds.nii"
-MOVINGDS=${OUTPUT}"/subject_ds.nii"
-
-if ( is_file_exist "$FIXEDDS" )
-then
-echo " FIXEDDS: $FIXEDDS exists"
-else
-#---exe---#
-message " Downsampling 63x target voi " 
-time $Vaa3D -x ireg -f resamplebyspacing -i $FIXEDNII -o $FIXEDDS -p "#x $DSRATIO #y $DSRATIO #z $DSRATIO" 
-fi
-
-if ( is_file_exist "$MOVINGDS" )
-then
-echo " MOVINGDS: $MOVINGDS exists"
-else
-#---exe---#
-message " Downsampling 63x subject voi " 
-time $Vaa3D -x ireg -f resamplebyspacing -i $MOVINGNIICR -o $MOVINGDS -p "#x $DSRATIO #y $DSRATIO #z $DSRATIO" 
-fi
-
 # local alignment
+
+FIX=$FIXEDNII
+MOV=$MOVINGNIICR
 
 SIMMETRIC=${OUTPUT}"/ccmi"
 AFFINEMATRIXLOCAL=${OUTPUT}"/ccmiAffine.txt"
 FWDDISPFIELD=${OUTPUT}"/ccmiWarp.nii.gz"
 BWDDISPFIELD=${OUTPUT}"/ccmiInverseWarp.nii.gz"
 
-MAXITERSCC=100x70x50x0
+MAXITERSCC=100x70x50x0x0
 
 if ( is_file_exist "$AFFINEMATRIXLOCAL" )
 then
@@ -568,9 +549,8 @@ echo " AFFINEMATRIXLOCAL: $AFFINEMATRIXLOCAL exists"
 else
 #---exe---#
 message " Local alignment "
-time $ANTS 3 -m  CC[ $FIXEDDS, $MOVINGDS, 0.75, 8] -m MI[ $FIXEDDS, $MOVINGDS, 0.25, 32] -t SyN[0.25]  -r Gauss[3,0] -o $SIMMETRIC -i $MAXITERSCC --initial-affine $INITAFFINE
+time $ANTS 3 -m  CC[ $FIX, $MOV, 0.75, 4] -t SyN[0.25]  -r Gauss[3,0] -o $SIMMETRIC -i $MAXITERSCC
 fi
-
 
 #############
 #
@@ -823,7 +803,7 @@ echo " AQ exists"
 else
 #---exe---#
 message " Evaluating "
-time $Vaa3D -x ireg -f esimilarity -o $AQ -p "#s $SUBSXDFRMD #cs $SUBSXREF #t $TARSX"
+time $Vaa3D -x ireg -f esimilarity -o $AQ -p "#s $SUBSXALINGED #cs $SUBSXREF #t $TARSX"
 fi
 
 while read LINE
