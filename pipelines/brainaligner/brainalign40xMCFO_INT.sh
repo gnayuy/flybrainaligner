@@ -549,7 +549,7 @@ echo " AFFINEMATRIXLOCAL: $AFFINEMATRIXLOCAL exists"
 else
 #---exe---#
 message " Local alignment "
-time $ANTS 3 -m  CC[ $FIX, $MOV, 0.75, 4] -t SyN[0.25]  -r Gauss[3,0] -o $SIMMETRIC -i $MAXITERSCC
+time $ANTS 3 -m  CC[ $FIX, $MOV, 1, 8] -t SyN[0.25]  -r Gauss[3,0] -o $SIMMETRIC -i $MAXITERSCC
 fi
 
 #############
