@@ -7,11 +7,12 @@
 # run on the cluster
 #
 # sh run_configured_aligner.sh genMIP.sh 4 -d '"debug"' -o workdir 
-# -c systemvars.apconf -k Toolkits -i <stack>
+# -c systemvars.apconf -k Toolkits -i <absolute_path/stack.v3draw>
 
 Vaa3D=./vaa3d
 MAGICK=/usr
 NETPBM=/usr
+FIJI=
 
 STACK=$1
 WORKDIR=$2
@@ -86,10 +87,19 @@ $MAGICK/bin/convert $MIP1 -channel RGB -separate $MIP1
 #$MAGICK/bin/convert $TEMPOUT3 $TEMPOUT4 $TEMPOUT5 $TEMPOUT6 -channel RGBA -combine $MIP
 
 $MAGICK/bin/convert -brightness-contrast -45x-55 $MIP2 $TEMPOUT10
-$MAGICK/bin/convert $TEMPOUT3 $TEMPOUT10 -compose lighten -composite $TEMPOUT7
-$MAGICK/bin/convert $TEMPOUT4 $TEMPOUT10 -compose lighten -composite $TEMPOUT8
-$MAGICK/bin/convert $TEMPOUT5 $TEMPOUT10 -compose lighten -composite $TEMPOUT9
-$MAGICK/bin/convert $TEMPOUT7 $TEMPOUT8 $TEMPOUT9 -channel RGB -combine $MIP
+#$MAGICK/bin/convert $TEMPOUT3 $TEMPOUT10 -compose lighten -composite $TEMPOUT7
+#$MAGICK/bin/convert $TEMPOUT4 $TEMPOUT10 -compose lighten -composite $TEMPOUT8
+#$MAGICK/bin/convert $TEMPOUT5 $TEMPOUT10 -compose lighten -composite $TEMPOUT9
+#$MAGICK/bin/convert $TEMPOUT7 $TEMPOUT8 $TEMPOUT9 -channel RGB -combine $MIP
+
+$FIJI/ImageJ -macro $FIJI/macros/substractBackground.ijm "$TEMPOUT3,$TEMPOUT7"
+$FIJI/ImageJ -macro $FIJI/macros/substractBackground.ijm "$TEMPOUT4,$TEMPOUT8"
+$FIJI/ImageJ -macro $FIJI/macros/substractBackground.ijm "$TEMPOUT5,$TEMPOUT9"
+
+$MAGICK/bin/convert $TEMPOUT7 $TEMPOUT10 -compose plus -composite $TEMPOUT3
+$MAGICK/bin/convert $TEMPOUT8 $TEMPOUT10 -compose plus -composite $TEMPOUT4
+$MAGICK/bin/convert $TEMPOUT9 $TEMPOUT10 -compose plus -composite $TEMPOUT5
+$MAGICK/bin/convert $TEMPOUT3 $TEMPOUT4 $TEMPOUT5 -channel RGB -combine $MIP
 
 #
 ## rm temporary files and copy the result to the right place
