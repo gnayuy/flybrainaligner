@@ -87,6 +87,8 @@ $MAGICK/bin/convert $MIP1 -channel RGB -separate $MIP1
 #$MAGICK/bin/convert $TEMPOUT3 $TEMPOUT4 $TEMPOUT5 $TEMPOUT6 -channel RGBA -combine $MIP
 
 $MAGICK/bin/convert -brightness-contrast -45x-55 $MIP2 $TEMPOUT10
+#$FIJI/ImageJ-linux64 --headless -macro $PWD/gaussianblur.ijm "$MIP2,$TEMPOUT10"
+#ln -s $MIP2 $TEMPOUT10
 #$MAGICK/bin/convert $TEMPOUT3 $TEMPOUT10 -compose lighten -composite $TEMPOUT7
 #$MAGICK/bin/convert $TEMPOUT4 $TEMPOUT10 -compose lighten -composite $TEMPOUT8
 #$MAGICK/bin/convert $TEMPOUT5 $TEMPOUT10 -compose lighten -composite $TEMPOUT9
