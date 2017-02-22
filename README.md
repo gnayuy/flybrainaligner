@@ -53,6 +53,9 @@ See [brainaligner][].
 1. Peng, H., Ruan, Z., Long, F., Simpson, J.H., and Myers, E.W. (2010) "V3D enables real-time 3D visualization and quantitative analysis of large-scale biological image data sets," Nature Biotechnology, Vol. 28, No. 4, pp.348-353.
 2. Murphy, S. D., Rokicki, K., Bruns, C., Yu, Y., Foster, L., Trautman, E., ... & Clack, N. (2014). The janelia workstation for neuroscience. Keystone Big Data in Biology. san francisco. CA.
 
+## Author information
+Please contact Yang Yu (yuy@janelia.hhmi.org) if you have any questions.
+
 ##
 
 [Vaa3D]: http://vaa3d.org
