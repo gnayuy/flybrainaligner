@@ -96,6 +96,7 @@ using namespace std;
 #include "../3drenderer/barFigureDialog.h"
 #include "../v3d/v3d_application.h"
 
+#include "../neuron_annotator/analysis/MaskChan.h"
 
 bool compute_statistics_objects(Vol3DSimple<unsigned char> *grayimg, Vol3DSimple<unsigned short int> * maskimg, LocationSimple * & p_ano, V3DLONG & n_objects)
 {
@@ -490,34 +491,46 @@ void My4DImage::loadImage(const char* filename)
 {
 	cleanExistData();
 
-	bool b_useMylib=false;
+    //
+    bool b_useMylib=false;
 
+    //
+    bool lsmFlag = false;
+    bool tiffFlag = false;
+    QFileInfo curfile_info(filename);
+    QString file_suffix = curfile_info.suffix().toUpper();
 
-        bool lsmFlag = false;
-        bool tiffFlag = false;
-        QString qFilename = QString(filename);
+    if (file_suffix=="LSM") {
+        lsmFlag = true;
+    } else if (file_suffix=="TIF" || file_suffix=="TIFF") {
+        tiffFlag = true;
+    } else if (file_suffix=="MASK" || file_suffix=="CHAN")
+    {
+        qDebug()<<"read mask/chan file";
 
-        if (qFilename.endsWith("lsm") || qFilename.endsWith("LSM")) {
-            lsmFlag = true;
-        } else if (qFilename.endsWith("tif") || qFilename.endsWith("TIF") || qFilename.endsWith("tiff") || qFilename.endsWith("TIFF")) {
-            tiffFlag = true;
-        }
+        MaskChan maskChan;
+        My4DImage* outputStack = maskChan.createImageFromMaskFiles(maskFilePaths);
 
-        if (lsmFlag) {
-            b_useMylib = true;
-        } else if (tiffFlag) {
-            b_useMylib = false;
-        } else if (V3dApplication::getMainWindow()) {
-            b_useMylib = V3dApplication::getMainWindow()->global_setting.b_UseMylibTiff;
-            qDebug() << "My4DImage::loadImage() set b_useMylib to value=" << b_useMylib << " based on global settings from MainWindow";
-        }
+        setupData4D();
 
+        return;
+    }
 
-        qDebug() << "My4DImage::loadImage() calling Image4DSimple::loadImage() with b_useMylib=" << b_useMylib;
+    if (lsmFlag) {
+        b_useMylib = true;
+    } else if (tiffFlag) {
+        b_useMylib = false;
+    } else if (V3dApplication::getMainWindow()) {
+        b_useMylib = V3dApplication::getMainWindow()->global_setting.b_UseMylibTiff;
+        qDebug() << "My4DImage::loadImage() set b_useMylib to value=" << b_useMylib << " based on global settings from MainWindow";
+    }
 
-	Image4DSimple::loadImage(filename, b_useMylib);
+    //
+    qDebug() << "My4DImage::loadImage() calling Image4DSimple::loadImage() with b_useMylib=" << b_useMylib;
 
-	setupData4D();
+    Image4DSimple::loadImage(filename, b_useMylib);
+
+    setupData4D();
 }
 
 bool My4DImage::reshape(V3DLONG rsz0, V3DLONG rsz1, V3DLONG rsz2, V3DLONG rsz3)

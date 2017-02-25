@@ -808,7 +808,6 @@ void MainWindow::loadV3DFile(QString fileName, bool b_putinrecentfilelist, bool 
         }
 
         //
-
         QFileInfo curfile_info(fileName);
 
         QString cur_suffix = curfile_info.suffix().toUpper();
@@ -1079,6 +1078,8 @@ void MainWindow::loadV3DFile(QString fileName, bool b_putinrecentfilelist, bool 
                   (cur_suffix=="VAA3DPBD") ||
                   (cur_suffix=="MP4") ||
                   (cur_suffix=="H5J") ||
+                  (cur_suffix=="MASK") ||
+                  (cur_suffix=="CHAN") ||
                   curfile_info.suffix().isEmpty() //then invoke raw reader in this case, 20120410. PHC
                   )
         {

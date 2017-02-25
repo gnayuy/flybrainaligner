@@ -1607,6 +1607,8 @@ v3d_main/jba/newmat11/tmtm.cpp
 v3d_main/multithreadimageIO/CMakeLists.txt
 v3d_main/multithreadimageIO/v3d_multithreadimageIO.cpp
 v3d_main/multithreadimageIO/v3d_multithreadimageIO.h
+v3d_main/neuron_annotator/analysis/MaskChan.cpp
+v3d_main/neuron_annotator/analysis/MaskChan.h
 v3d_main/neuron_editing/apo_xforms.cpp
 v3d_main/neuron_editing/apo_xforms.h
 v3d_main/neuron_editing/CMakeLists.txt
