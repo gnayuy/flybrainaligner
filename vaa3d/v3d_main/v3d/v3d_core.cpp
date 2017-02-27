@@ -172,6 +172,8 @@ inline bool isIndexColor(ImageDisplayColorType c) { return (c>=colorPseudoMaskCo
 #include "../neuron_annotator/utility/loadV3dFFMpeg.h"
 #endif
 
+#include "../neuron_annotator/analysis/MaskChan.h"
+
 /////// a global variable to limit the amount of memory use
 
 #if defined (Q_OS_LINUX)
@@ -4658,33 +4660,74 @@ bool XFormWidget::loadData()
 		}
 	}
 
-	//the following are the original codes
+    //
+    const char* filename = openFileNameLabel.toStdString().c_str();
+    QFileInfo curFileInfo(openFileNameLabel);
+    QString fileSuffix = curFileInfo.suffix().toUpper();
 
-	if (imgData)
-	{
-		cleanData();
-	}
+    if (imgData)
+    {
+        cleanData();
+    }
 
-	imgData = new My4DImage;
-	if (!imgData)
-		return false;
-	else {
-		imgData->setMainWidget((XFormWidget *)this); //by PHC, added 100904 to ensure imgData can access global setting
-	}
+    //
+    if(fileSuffix=="MASK" || fileSuffix=="CHAN")
+    {
+        qDebug()<<"read mask/chan file";
 
-	// The previous version of toAscii().data() worked fine on OS X and Linux
-	// but barfs on Windows. According to the Qt docs using toAscii and its ilk
-	// has a memory leak, which apparently corrupts the pointer on Windows
-	QByteArray ba = openFileNameLabel.toUtf8();
-	const char* filename = ba.constData();
-	const char * curFileSurfix = getSuffix(filename);
+        QStringList maskFilePaths;
 
-	if ( curFileSurfix && strcasecmp(curFileSurfix, "mp4") == 0 )
-		loadH264Image( filename );
-	else if ( curFileSurfix && strcasecmp(curFileSurfix, "h5j") == 0 )
-		loadHDF5( filename );
-	else
-		imgData->loadImage(filename);  // imgData->loadImage("/Users/hanchuanpeng/work/v3d/test1.raw");
+        if(fileSuffix=="MASK")
+        {
+             maskFilePaths << curFileInfo.filePath();
+             QString chanFile = curFileInfo.filePath().section(".",0,0).append(".chan");
+
+             if(QFileInfo(chanFile).exists())
+             {
+                 maskFilePaths << chanFile;
+             }
+             else
+             {
+                 qDebug()<<"corresponding .chan file" << chanFile << " is missing";
+                 return false;
+             }
+        }
+        else
+        {
+            maskFilePaths << curFileInfo.filePath();
+            QString maskFile = curFileInfo.filePath().section(".",0,0).append(".mask");
+
+            if(QFileInfo(maskFile).exists())
+            {
+                maskFilePaths << maskFile;
+            }
+            else
+            {
+                qDebug()<<"corresponding .mask file " << maskFile << " is missing";
+                return false;
+            }
+        }
+
+        MaskChan maskChan;
+        imgData = maskChan.createImageFromMaskFiles(maskFilePaths);
+
+        qDebug()<<"mask/chan file is read";
+    }
+    else
+    {
+        imgData = new My4DImage;
+        if (!imgData)
+            return false;
+
+        if ( fileSuffix=="MP4" )
+            loadH264Image( filename );
+        else if ( fileSuffix=="H5J" )
+            loadHDF5( filename );
+        else
+            imgData->loadImage(filename);  // imgData->loadImage("/Users/hanchuanpeng/work/v3d/test1.raw");
+    }
+
+    //
 	if (imgData->isEmpty())
 	{
 		delete imgData; imgData = 0;
@@ -4695,6 +4738,9 @@ bool XFormWidget::loadData()
 				"(3) Your image file is too big. Since on 32-bit machines, an image is at most 2G bytes, and opening tiff files need extra-space for temporary buffer, thus currently V3D has a limitaton on the size of images: TIFF and LSM files less than 900M Bytes, and Hanchuan's RAW file less than 1.5G bytes. You can contact Hanchuan Peng to get a special version of V3D to handle very big image files.<br>");
 		return false;
 	}
+    else {
+        imgData->setMainWidget((XFormWidget *)this); //by PHC, added 100904 to ensure imgData can access global setting
+    }
 
 	v3d_msg(QString("img data size %1 %2 %3 %4\n").arg(imgData->getXDim()).arg(imgData->getYDim()).arg(imgData->getZDim()).arg(imgData->getCDim()), 0);
 

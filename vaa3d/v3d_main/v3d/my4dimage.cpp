@@ -96,8 +96,6 @@ using namespace std;
 #include "../3drenderer/barFigureDialog.h"
 #include "../v3d/v3d_application.h"
 
-#include "../neuron_annotator/analysis/MaskChan.h"
-
 bool compute_statistics_objects(Vol3DSimple<unsigned char> *grayimg, Vol3DSimple<unsigned short int> * maskimg, LocationSimple * & p_ano, V3DLONG & n_objects)
 {
 	if (!grayimg || !grayimg->valid() || !maskimg || !maskimg->valid() || p_ano) //p_ano MUST be 0 as this function need to alocate memory for it
@@ -504,16 +502,6 @@ void My4DImage::loadImage(const char* filename)
         lsmFlag = true;
     } else if (file_suffix=="TIF" || file_suffix=="TIFF") {
         tiffFlag = true;
-    } else if (file_suffix=="MASK" || file_suffix=="CHAN")
-    {
-        qDebug()<<"read mask/chan file";
-
-        MaskChan maskChan;
-        My4DImage* outputStack = maskChan.createImageFromMaskFiles(maskFilePaths);
-
-        setupData4D();
-
-        return;
     }
 
     if (lsmFlag) {
