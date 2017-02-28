@@ -1099,9 +1099,21 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
         }
 
     }
+
+    // test
+
+    std::cout<<"debug ... dp "<<dp<<std::endl;
+    unsigned short maxVal = 0;
+    for(long i=0; i<dp; i++)
+    {
+        if (maxVal < target16Data[i])
+            maxVal = target16Data[i];
+    }
+    std::cout<<"debug ... maxVal = "<<maxVal<<std::endl;
+
+
     return dp*2;
 }
-
 
 // This is the main decompression function, which is basically a wrapper for the decompression function
 // of ImageLoaderBasic, except it determines the boundary of acceptable processing given the contents of the

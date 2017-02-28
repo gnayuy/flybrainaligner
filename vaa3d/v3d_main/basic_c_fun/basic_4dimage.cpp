@@ -167,7 +167,7 @@ void Image4DSimple::loadImage(const char* filename, bool b_useMyLib)
         }
     }
 #ifdef _ALLOW_WORKMODE_MENU_
-    //else if ( curFileSuffix && ImageLoader::hasPbdExtension(QString(filename)) ) // read v3dpbd - pack-bit-difference encoding for sparse stacks
+
     else if ( curFileSuffix && strcasecmp(curFileSuffix, "v3dpbd")==0 ) // read v3dpbd - pack-bit-difference encoding for sparse stacks
     {
         v3d_msg("start to try v3dpbd", 0);
@@ -231,6 +231,20 @@ void Image4DSimple::loadImage(const char* filename, bool b_useMyLib)
     sz1 = tmp_sz[1];
     sz2 = tmp_sz[2];
     sz3 = tmp_sz[3]; //no longer merge the 3rd and 4th dimensions
+
+    // test
+    unsigned short maxVal = 0;
+    unsigned short *p = (unsigned short *)(this->data1d);
+
+    long totalsz = sz0*sz1*sz2;
+
+    for(long i=0; i<totalsz; i++)
+    {
+        if (maxVal < p[i])
+            maxVal = p[i];
+    }
+    printf("maxVal ... %d of %ld voxels \n",maxVal,totalsz);
+
 
     /* clean all workspace variables */
 

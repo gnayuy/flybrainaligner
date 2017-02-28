@@ -36,7 +36,7 @@ Peng, H, Ruan, Z., Atasoy, D., and Sternson, S. (2010) “Automatic reconstructi
 #ifndef __V3D_COMPILE_CONSTRAINTS__
 #define __V3D_COMPILE_CONSTRAINTS__
 
-	#define COMPILE_TARGET_LEVEL 2
+    #define COMPILE_TARGET_LEVEL 2
 
 	#if COMPILE_TARGET_LEVEL == 2
 
