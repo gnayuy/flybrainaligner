@@ -48,11 +48,11 @@ int NeuronFragmentEditor::processArgs(vector<char*> *argList)
             } else if (modeString=="mips") {
                 mode=MODE_MIPS;
             } else if (modeString=="mask-from-stack") {
-	        mode=MODE_MASK_FROM_STACK;
-	    } else if (modeString=="surface-from-stack") {
-	      mode=MODE_SURFACE_VERTEX;
-	    } else {
-	      mode=MODE_UNDEFINED;
+                mode=MODE_MASK_FROM_STACK;
+            } else if (modeString=="surface-from-stack") {
+                mode=MODE_SURFACE_VERTEX;
+            } else {
+                mode=MODE_UNDEFINED;
             }
         } else if (arg=="-sourceImage") {
             sourceImageFilepath=(*argList)[++i];
@@ -68,7 +68,7 @@ int NeuronFragmentEditor::processArgs(vector<char*> *argList)
             }
         } else if (arg=="-outputMip") {
             outputMipFilepath=(*argList)[++i];
-	    qDebug() << "Set -outputMip = " << outputMipFilepath;
+            qDebug() << "Set -outputMip = " << outputMipFilepath;
         } else if (arg=="-outputStack") {
             outputStackFilepath=(*argList)[++i];
         } else if (arg=="-outputDir") {
@@ -79,7 +79,7 @@ int NeuronFragmentEditor::processArgs(vector<char*> *argList)
             do {
                 QString possibleMaskFile=(*argList)[++i];
                 if (possibleMaskFile.startsWith("-")) {
-		  i--;
+                    i--;
                     break;
                 } else {
                     // Assume is mask file
@@ -90,24 +90,24 @@ int NeuronFragmentEditor::processArgs(vector<char*> *argList)
             QString maxThreadString=(*argList)[++i];
             maxThreadCount=maxThreadString.toInt();
         } else if (arg=="-channel") {
-	  QString channelString=(*argList)[++i];
-	  channel=channelString.toInt();
-	} else if (arg=="-threshold") {
-	  QString thresholdString=(*argList)[++i];
-	  threshold=thresholdString.toDouble();
-	} else if (arg=="-surfaceVertexFile") {
-	  surfaceVertexFilepath=(*argList)[++i];
-	} else if (arg=="-normalizeVertexFile") {
-	  normalizeVertexFile=true;
-	}
+            QString channelString=(*argList)[++i];
+            channel=channelString.toInt();
+        } else if (arg=="-threshold") {
+            QString thresholdString=(*argList)[++i];
+            threshold=thresholdString.toDouble();
+        } else if (arg=="-surfaceVertexFile") {
+            surfaceVertexFilepath=(*argList)[++i];
+        } else if (arg=="-normalizeVertexFile") {
+            normalizeVertexFile=true;
+        }
     }
     bool argError=false;
     if (mode!=MODE_COMBINE &&
-	mode!=MODE_COMBINE_MASK &&
-	mode!=MODE_REVERSE_LABEL &&
-	mode!=MODE_MIPS &&
-	mode!=MODE_MASK_FROM_STACK &&
-	mode!=MODE_SURFACE_VERTEX) {
+            mode!=MODE_COMBINE_MASK &&
+            mode!=MODE_REVERSE_LABEL &&
+            mode!=MODE_MIPS &&
+            mode!=MODE_MASK_FROM_STACK &&
+            mode!=MODE_SURFACE_VERTEX) {
         qDebug() << "Do not recognize valid mode";
         argError=true;
     }
@@ -157,10 +157,10 @@ int NeuronFragmentEditor::processArgs(vector<char*> *argList)
             argError=true;
         }
     } else if (mode==MODE_SURFACE_VERTEX) {
-      if (surfaceVertexFilepath.size() < 1) {
-	qDebug() << "-surfaceVertexFile is required";
-	argError=true;
-      }
+        if (surfaceVertexFilepath.size() < 1) {
+            qDebug() << "-surfaceVertexFile is required";
+            argError=true;
+        }
     }
     if (argError) {
         return 1;
@@ -177,17 +177,17 @@ bool NeuronFragmentEditor::execute()
         globalThreadPool->setMaxThreadCount(maxThreadCount);
     }
     if (mode==MODE_COMBINE) {
-      return createFragmentComposite();
+        return createFragmentComposite();
     } else if (mode==MODE_COMBINE_MASK) {
-      return createMaskComposite();
+        return createMaskComposite();
     } else if (mode==MODE_REVERSE_LABEL) {
-      return reverseLabel();
+        return reverseLabel();
     } else if (mode==MODE_MIPS) {
-      return createMips();
+        return createMips();
     } else if (mode==MODE_MASK_FROM_STACK) {
-      return createMaskFromStack();
+        return createMaskFromStack();
     } else if (mode==MODE_SURFACE_VERTEX) {
-      return createSurfaceVertex();
+        return createSurfaceVertex();
     } else {
         return false;
     }
@@ -195,101 +195,101 @@ bool NeuronFragmentEditor::execute()
 
 bool NeuronFragmentEditor::createMaskFromStack()
 {
-  ImageLoader preLoader;
-  QFileInfo sourceFileInfo(sourceImageFilepath);
-  if (!sourceFileInfo.exists()) {
-    qDebug() << "Could not find source image file=" << sourceImageFilepath;
-    return false;
-  }
-
-  My4DImage* preImage=preLoader.loadImage(sourceImageFilepath);
-
-  xdim=preImage->getXDim();
-  ydim=preImage->getYDim();
-  zdim=preImage->getZDim();
-  cdim=preImage->getCDim();
-
-  qDebug() << "Using source x=" << xdim << " y=" << ydim << " z=" << zdim << " c=" << cdim << " datatype=" << preImage->getDatatype();
-
-  sourceImage = new My4DImage();
-  sourceImage->loadImage(xdim, ydim, zdim, 1, preImage->getDatatype());
-
-  // For the label image, we will create an artificial label stack, and use the label field with a '1' when the source intensity is
-  // above threshold, and a '0' when it is below
-
-  labelImage = new My4DImage();
-  labelImage->loadImage(xdim, ydim, zdim, 1, V3D_UINT8);
-
-  v3d_uint8* label8 = (v3d_uint8*)(labelImage->getRawDataAtChannel(0));
-
-  if (sourceImage->getDatatype()==V3D_UINT8) {
-    v3d_uint8* pre8 = (v3d_uint8*)(preImage->getRawDataAtChannel(channel));
-    v3d_uint8* source8 = (v3d_uint8*)(sourceImage->getRawDataAtChannel(0));
-    v3d_uint8 t = 255.0*threshold;
-    long rawSize=xdim*ydim*zdim;
-    for (long i=0;i<rawSize;i++) {
-      source8[i]=pre8[i];
-      if (pre8[i]>t) {
-	label8[i]=1;
-      } else {
-	label8[i]=0;
-      }
+    ImageLoader preLoader;
+    QFileInfo sourceFileInfo(sourceImageFilepath);
+    if (!sourceFileInfo.exists()) {
+        qDebug() << "Could not find source image file=" << sourceImageFilepath;
+        return false;
     }
-  } else if (sourceImage->getDatatype()==V3D_UINT16) {
-    v3d_uint16* pre16 = (v3d_uint16*)(preImage->getRawDataAtChannel(channel));
-    v3d_uint16* source16 = (v3d_uint16*)(sourceImage->getRawDataAtChannel(0));
-    v3d_uint16 t = 4095.0*threshold;
-    long rawSize=xdim*ydim*zdim;
-    for (long i=0;i<rawSize;i++) {
-      source16[i]=pre16[i];
-      if (pre16[i]>t) {
-	label8[i]=1;
-      } else {
-	label8[i]=0;
-      }
+
+    My4DImage* preImage=preLoader.loadImage(sourceImageFilepath);
+
+    xdim=preImage->getXDim();
+    ydim=preImage->getYDim();
+    zdim=preImage->getZDim();
+    cdim=preImage->getCDim();
+
+    qDebug() << "Using source x=" << xdim << " y=" << ydim << " z=" << zdim << " c=" << cdim << " datatype=" << preImage->getDatatype();
+
+    sourceImage = new My4DImage();
+    sourceImage->loadImage(xdim, ydim, zdim, 1, preImage->getDatatype());
+
+    // For the label image, we will create an artificial label stack, and use the label field with a '1' when the source intensity is
+    // above threshold, and a '0' when it is below
+
+    labelImage = new My4DImage();
+    labelImage->loadImage(xdim, ydim, zdim, 1, V3D_UINT8);
+
+    v3d_uint8* label8 = (v3d_uint8*)(labelImage->getRawDataAtChannel(0));
+
+    if (sourceImage->getDatatype()==V3D_UINT8) {
+        v3d_uint8* pre8 = (v3d_uint8*)(preImage->getRawDataAtChannel(channel));
+        v3d_uint8* source8 = (v3d_uint8*)(sourceImage->getRawDataAtChannel(0));
+        v3d_uint8 t = 255.0*threshold;
+        long rawSize=xdim*ydim*zdim;
+        for (long i=0;i<rawSize;i++) {
+            source8[i]=pre8[i];
+            if (pre8[i]>t) {
+                label8[i]=1;
+            } else {
+                label8[i]=0;
+            }
+        }
+    } else if (sourceImage->getDatatype()==V3D_UINT16) {
+        v3d_uint16* pre16 = (v3d_uint16*)(preImage->getRawDataAtChannel(channel));
+        v3d_uint16* source16 = (v3d_uint16*)(sourceImage->getRawDataAtChannel(0));
+        v3d_uint16 t = 4095.0*threshold;
+        long rawSize=xdim*ydim*zdim;
+        for (long i=0;i<rawSize;i++) {
+            source16[i]=pre16[i];
+            if (pre16[i]>t) {
+                label8[i]=1;
+            } else {
+                label8[i]=0;
+            }
+        }
+    } else {
+        qDebug() << "Do not recognize image type";
+        return false;
     }
-  } else {
-    qDebug() << "Do not recognize image type";
-    return false;
-  }
 
-  delete preImage;
+    delete preImage;
 
-  maskChan.setSourceImage(sourceImage);
-  maskChan.setLabelImage(labelImage);
+    maskChan.setSourceImage(sourceImage);
+    maskChan.setLabelImage(labelImage);
 
-  // For output paths, we will use the prefix of the source image stack
+    // For output paths, we will use the prefix of the source image stack
 
-  QDir outputDir(outputDirPath);
-  if (!outputDir.exists()) {
-    QDir().mkdir(outputDirPath);
-  }
+    QDir outputDir(outputDirPath);
+    if (!outputDir.exists()) {
+        QDir().mkdir(outputDirPath);
+    }
 
-  QString filename=outputDirPath;
-  filename.append("/");
-  if (outputPrefix.length()>0) {
-    filename.append(outputPrefix);
-  }
+    QString filename=outputDirPath;
+    filename.append("/");
+    if (outputPrefix.length()>0) {
+        filename.append(outputPrefix);
+    }
 
-  QString maskFullPath=filename;
-  maskFullPath.append(".mask");
-  QString chanFullPath=filename;
-  chanFullPath.append(".chan");
+    QString maskFullPath=filename;
+    maskFullPath.append(".mask");
+    QString chanFullPath=filename;
+    chanFullPath.append(".chan");
 
-  QReadWriteLock* nullMutex=0L;
-  bool resultStatus= maskChan.createMaskChanForLabel(1, maskFullPath, chanFullPath, nullMutex);
+    QReadWriteLock* nullMutex=0L;
+    bool resultStatus= maskChan.createMaskChanForLabel(1, maskFullPath, chanFullPath, nullMutex);
 
-  delete labelImage;
-  delete sourceImage;
+    delete labelImage;
+    delete sourceImage;
 
-  labelImage=0L;
-  sourceImage=0L;
+    labelImage=0L;
+    sourceImage=0L;
 }
 
 bool NeuronFragmentEditor::loadSourceAndLabelImages()
 {
 
-  qDebug() << "NeuronFragmentEditor::loadSourceAndLabelImages()";
+    qDebug() << "NeuronFragmentEditor::loadSourceAndLabelImages()";
 
     // Open consolidated signal label file
     ImageLoader sourceLoader;
@@ -321,10 +321,10 @@ bool NeuronFragmentEditor::loadSourceAndLabelImages()
         qDebug() << "source and label zdim do not match";
         return false;
     }
-//    if (cdim<3) {
-//        qDebug() << "Expected source image to contain at least 3 channels";
-//        return false;
-//    }
+    //    if (cdim<3) {
+    //        qDebug() << "Expected source image to contain at least 3 channels";
+    //        return false;
+    //    }
     return true;
 }
 
@@ -523,8 +523,8 @@ bool NeuronFragmentEditor::reverseLabel()
     for (int l=0;l<labelList.size();l++) {
         int label=labelList[l];
         qDebug() << "Processing label=" << label << " voxels=" << labelIndex[label];
-	QString maskFullPath=createFullPathFromLabel(label, ".mask");
-	QString chanFullPath=createFullPathFromLabel(label, ".chan");
+        QString maskFullPath=createFullPathFromLabel(label, ".mask");
+        QString chanFullPath=createFullPathFromLabel(label, ".chan");
         QFuture<bool> labelJob = QtConcurrent::run(maskChan, &MaskChan::createMaskChanForLabel, label, maskFullPath, chanFullPath, &mutex);
         labelProcessList.append(labelJob);
     }
@@ -561,27 +561,30 @@ bool NeuronFragmentEditor::reverseLabel()
 
 bool NeuronFragmentEditor::createMaskComposite()
 {
-  MaskChan maskChan;
-  My4DImage* outputStack = maskChan.createImageFromMaskFiles(maskFilePaths);
+    for(int i=0; i<maskFilePaths.size(); i++)
+        qDebug()<<"maskFilePaths "<<i<<maskFilePaths[i];
 
-  qDebug() << "Saving composite";
+    MaskChan maskChan;
+    My4DImage* outputStack = maskChan.createImageFromMaskFiles(maskFilePaths);
 
-  ImageLoader compositeLoader;
-  compositeLoader.saveImage(outputStack, outputStackFilepath);
+    qDebug() << "Saving composite";
 
-  qDebug() << "Creating mip";
-  My4DImage * compositeMIP = AnalysisTools::createMIPFromImage(outputStack);
+    ImageLoader compositeLoader;
+    compositeLoader.saveImage(outputStack, outputStackFilepath);
 
-  qDebug() << "Saving mip";
-  ImageLoader compositeMIPSaver;
-  compositeMIPSaver.saveImage(compositeMIP, outputMipFilepath);
+    qDebug() << "Creating mip";
+    My4DImage * compositeMIP = AnalysisTools::createMIPFromImage(outputStack);
 
-  qDebug() << "Starting cleanup";
+    qDebug() << "Saving mip";
+    ImageLoader compositeMIPSaver;
+    compositeMIPSaver.saveImage(compositeMIP, outputMipFilepath);
 
-  delete outputStack;
-  delete compositeMIP;
+    qDebug() << "Starting cleanup";
 
-  return true;
+    delete outputStack;
+    delete compositeMIP;
+
+    return true;
 }
 
 bool NeuronFragmentEditor::createMips()
@@ -630,167 +633,167 @@ QString NeuronFragmentEditor::createFullPathFromLabel(int label, QString extensi
 
 bool NeuronFragmentEditor::createSurfaceVertex()
 {
-  // We want to materialize the 3D stack, and then do a 3-way x,y,z approach, detecting transitions in and out
-  // of the mask.
-  My4DImage* sourceMask=0L;
+    // We want to materialize the 3D stack, and then do a 3-way x,y,z approach, detecting transitions in and out
+    // of the mask.
+    My4DImage* sourceMask=0L;
 
-  if (sourceImageFilepath.endsWith(".mask")) {
-    QStringList fileList;
-    fileList.append(sourceImageFilepath);
-    MaskChan mc;
-    sourceMask=mc.createImageFromMaskFiles(fileList);
-  } else {
-    ImageLoader il;
-    sourceMask=il.loadImage(sourceImageFilepath);
-  }
+    if (sourceImageFilepath.endsWith(".mask")) {
+        QStringList fileList;
+        fileList.append(sourceImageFilepath);
+        MaskChan mc;
+        sourceMask=mc.createImageFromMaskFiles(fileList);
+    } else {
+        ImageLoader il;
+        sourceMask=il.loadImage(sourceImageFilepath);
+    }
 
-  QList<double> xList;
-  QList<double> yList;
-  QList<double> zList;
+    QList<double> xList;
+    QList<double> yList;
+    QList<double> zList;
 
-  int cdim=sourceMask->getCDim();
-  int xdim=sourceMask->getXDim();
-  int ydim=sourceMask->getYDim();
-  int zdim=sourceMask->getZDim();
+    int cdim=sourceMask->getCDim();
+    int xdim=sourceMask->getXDim();
+    int ydim=sourceMask->getYDim();
+    int zdim=sourceMask->getZDim();
 
-  int mdim=xdim;
-  if (ydim>mdim) {
-    mdim=ydim;
-  }
-  if (zdim>mdim) {
-    mdim=zdim;
-  }
-  double mnorm=mdim*1.0;
+    int mdim=xdim;
+    if (ydim>mdim) {
+        mdim=ydim;
+    }
+    if (zdim>mdim) {
+        mdim=zdim;
+    }
+    double mnorm=mdim*1.0;
 
-  v3d_uint8** cdata=new v3d_uint8*[cdim];
+    v3d_uint8** cdata=new v3d_uint8*[cdim];
 
-  for (int c=0;c<cdim;c++) {
-    cdata[c]=sourceMask->getRawDataAtChannel(c);
-  }
+    for (int c=0;c<cdim;c++) {
+        cdata[c]=sourceMask->getRawDataAtChannel(c);
+    }
 
-  bool priorPosition=false;
+    bool priorPosition=false;
 
-  int xySize=ydim*xdim;
+    int xySize=ydim*xdim;
 
-  // Do x-pass
-  priorPosition=false;
-  for (int z=0;z<zdim;z++) {
+    // Do x-pass
+    priorPosition=false;
+    for (int z=0;z<zdim;z++) {
+        for (int y=0;y<ydim;y++) {
+            for (int x=0;x<xdim;x++) {
+                bool ot=false;
+                int offset=z*xySize+y*xdim+x;
+                for (int c=0;c<cdim;c++) {
+                    if (cdata[c][offset]>0) {
+                        ot=true;
+                        break;
+                    }
+                }
+                if ( (priorPosition && !ot) ||
+                     (!priorPosition && ot) ||
+                     (x==(xdim-1) && ot) ||
+                     (y==(ydim-1) && ot) ||
+                     (z==(zdim-1) && ot) ) {
+                    double xv=1.0*x;
+                    double yv=1.0*y+0.5;
+                    double zv=1.0*z+0.5;
+                    if (normalizeVertexFile) {
+                        xv/=mnorm;
+                        yv/=mnorm;
+                        zv/=mnorm;
+                    }
+                    xList.append(xv);
+                    yList.append(yv);
+                    zList.append(zv);
+                }
+                priorPosition=ot;
+            }
+            priorPosition=false;
+        }
+    }
+
+    // Do y-pass
+    priorPosition=false;
+    for (int z=0;z<zdim;z++) {
+        for (int x=0;x<xdim;x++) {
+            for (int y=0;y<ydim;y++) {
+                bool ot=false;
+                int offset=z*xySize+y*xdim+x;
+                for (int c=0;c<cdim;c++) {
+                    if (cdata[c][offset]>0) {
+                        ot=true;
+                        break;
+                    }
+                }
+                if ( (priorPosition && !ot) ||
+                     (!priorPosition && ot) ||
+                     (x==(xdim-1) && ot) ||
+                     (y==(ydim-1) && ot)  ||
+                     (z==(zdim-1) && ot) ) {
+                    double xv=1.0*x+0.5;
+                    double yv=1.0*y;
+                    double zv=1.0*z+0.5;
+                    if (normalizeVertexFile) {
+                        xv/=mnorm;
+                        yv/=mnorm;
+                        zv/=mnorm;
+                    }
+                    xList.append(xv);
+                    yList.append(yv);
+                    zList.append(zv);
+                }
+                priorPosition=ot;
+            }
+            priorPosition=false;
+        }
+    }
+
+
+    // Do z-pass
+    priorPosition=false;
     for (int y=0;y<ydim;y++) {
-      for (int x=0;x<xdim;x++) {
-	bool ot=false;
-	int offset=z*xySize+y*xdim+x;
-	for (int c=0;c<cdim;c++) {
-	  if (cdata[c][offset]>0) {
-	    ot=true;
-	    break;
-	  }
-	}
-	if ( (priorPosition && !ot) ||
-	     (!priorPosition && ot) ||
-             (x==(xdim-1) && ot) ||
-             (y==(ydim-1) && ot) ||
-             (z==(zdim-1) && ot) ) {
-	  double xv=1.0*x;
-	  double yv=1.0*y+0.5;
-	  double zv=1.0*z+0.5;
-	  if (normalizeVertexFile) {
-	    xv/=mnorm;
-	    yv/=mnorm;
-	    zv/=mnorm;
-	  }
-	  xList.append(xv);
-	  yList.append(yv);
-	  zList.append(zv);
-	}
-	priorPosition=ot;
-      }
-      priorPosition=false;
+        for (int x=0;x<xdim;x++) {
+            for (int z=0;z<zdim;z++) {
+                bool ot=false;
+                int offset=z*xySize+y*xdim+x;
+                for (int c=0;c<cdim;c++) {
+                    if (cdata[c][offset]>0) {
+                        ot=true;
+                        break;
+                    }
+                }
+                if ( (priorPosition && !ot) ||
+                     (!priorPosition && ot) ||
+                     (x==(xdim-1) && ot) ||
+                     (y==(ydim-1) && ot) ||
+                     (z==(zdim-1) && ot) ) {
+                    double xv=1.0*x+0.5;
+                    double yv=1.0*y+0.5;
+                    double zv=1.0*z;
+                    if (normalizeVertexFile) {
+                        xv/=mnorm;
+                        yv/=mnorm;
+                        zv/=mnorm;
+                    }
+                    xList.append(xv);
+                    yList.append(yv);
+                    zList.append(zv);
+                }
+                priorPosition=ot;
+            }
+            priorPosition=false;
+        }
     }
-  }
 
-  // Do y-pass
-  priorPosition=false;
-  for (int z=0;z<zdim;z++) {
-    for (int x=0;x<xdim;x++) {
-      for (int y=0;y<ydim;y++) {
-	bool ot=false;
-	int offset=z*xySize+y*xdim+x;
-	for (int c=0;c<cdim;c++) {
-	  if (cdata[c][offset]>0) {
-	    ot=true;
-	    break;
-	  }
-	}
-	if ( (priorPosition && !ot) ||
-	     (!priorPosition && ot) ||
-	     (x==(xdim-1) && ot) ||
-             (y==(ydim-1) && ot)  ||
-	     (z==(zdim-1) && ot) ) {
-	  double xv=1.0*x+0.5;
-	  double yv=1.0*y;
-	  double zv=1.0*z+0.5;
-	  if (normalizeVertexFile) {
-	    xv/=mnorm;
-	    yv/=mnorm;
-	    zv/=mnorm;
-	  }
-	  xList.append(xv);
-	  yList.append(yv);
-	  zList.append(zv);
-	}
-	priorPosition=ot;
-      }
-      priorPosition=false;
+    // Now write output file
+    QFile vertexFile(surfaceVertexFilepath);
+    vertexFile.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&vertexFile);
+    for (int i=0;i<xList.size();i++) {
+        out << "v " << xList[i] << " " << yList[i] << " " << zList[i] << "\n";
     }
-  }
+    vertexFile.close();
 
-
-  // Do z-pass
-  priorPosition=false;
-  for (int y=0;y<ydim;y++) {
-    for (int x=0;x<xdim;x++) {
-      for (int z=0;z<zdim;z++) {
-	bool ot=false;
-	int offset=z*xySize+y*xdim+x;
-	for (int c=0;c<cdim;c++) {
-	  if (cdata[c][offset]>0) {
-	    ot=true;
-	    break;
-	  }
-	}
-	if ( (priorPosition && !ot) ||
-	     (!priorPosition && ot) ||
-	     (x==(xdim-1) && ot) ||
-	     (y==(ydim-1) && ot) ||
-	     (z==(zdim-1) && ot) ) {
-	  double xv=1.0*x+0.5;
-	  double yv=1.0*y+0.5;
-	  double zv=1.0*z;
-	  if (normalizeVertexFile) {
-	    xv/=mnorm;
-	    yv/=mnorm;
-	    zv/=mnorm;
-	  }
-	  xList.append(xv);
-	  yList.append(yv);
-	  zList.append(zv);
-	}
-	priorPosition=ot;
-      }
-      priorPosition=false;
-    }
-  }
-
-  // Now write output file
-  QFile vertexFile(surfaceVertexFilepath);
-  vertexFile.open(QIODevice::WriteOnly | QIODevice::Text);
-  QTextStream out(&vertexFile);
-  for (int i=0;i<xList.size();i++) {
-    out << "v " << xList[i] << " " << yList[i] << " " << zList[i] << "\n";
-  }
-  vertexFile.close();
-
-  return true;
+    return true;
 }
 
 

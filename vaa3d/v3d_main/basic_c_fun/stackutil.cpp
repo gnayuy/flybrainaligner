@@ -111,6 +111,7 @@ Peng, H, Ruan, Z., Atasoy, D., and Sternson, S. (2010) “Automatic reconstructi
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
 
 #include "stackutil.h"
 #include "basic_memory.cpp" //change basic_memory.h to basic_memory.cpp, 080302
@@ -4031,7 +4032,6 @@ bool loadImage(char imgSrcFile[], unsigned char *& data1d, V3DLONG * &sz, int & 
 	return true;
 }
 
-
 bool saveImage(const char filename[], const unsigned char * data1d, const V3DLONG * sz, const int datatype)
 {
 	if (!data1d || !filename || !sz)
@@ -4039,6 +4039,20 @@ bool saveImage(const char filename[], const unsigned char * data1d, const V3DLON
 		printf("This image data is empty or the file name or the size pointer is invalid. Nothing done.\n");
 		return false;
 	}
+
+    //
+    unsigned short maxVal = 0;
+    unsigned short *p = (unsigned short *)data1d;
+
+    long totalsz = sz[0]*sz[1]*sz[2];
+
+    for(long i=0; i<totalsz; i++)
+    {
+        if (maxVal < p[i])
+            maxVal = p[i];
+    }
+    std::cout<<"maxVal ... "<<maxVal<<" of "<<totalsz<<" voxels"<<std::endl;
+    //
 
 	int dt;
     ImagePixelType curtype;

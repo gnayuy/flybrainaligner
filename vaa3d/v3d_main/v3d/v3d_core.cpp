@@ -4680,21 +4680,21 @@ bool XFormWidget::loadData()
         if(fileSuffix=="MASK")
         {
              maskFilePaths << curFileInfo.filePath();
-             QString chanFile = curFileInfo.filePath().section(".",0,0).append(".chan");
+//             QString chanFile = curFileInfo.filePath().section(".",0,0).append(".chan");
 
-             if(QFileInfo(chanFile).exists())
-             {
-                 maskFilePaths << chanFile;
-             }
-             else
-             {
-                 qDebug()<<"corresponding .chan file" << chanFile << " is missing";
-                 return false;
-             }
+//             if(QFileInfo(chanFile).exists())
+//             {
+//                 maskFilePaths << chanFile;
+//             }
+//             else
+//             {
+//                 qDebug()<<"corresponding .chan file" << chanFile << " is missing";
+//                 return false;
+//             }
         }
         else
         {
-            maskFilePaths << curFileInfo.filePath();
+            //maskFilePaths << curFileInfo.filePath();
             QString maskFile = curFileInfo.filePath().section(".",0,0).append(".mask");
 
             if(QFileInfo(maskFile).exists())

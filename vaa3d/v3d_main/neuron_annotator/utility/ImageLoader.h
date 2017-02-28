@@ -13,7 +13,7 @@ using namespace std;
 class ImageLoader : public QObject, public QRunnable, ImageLoaderBasic
 {
 
-Q_OBJECT
+    Q_OBJECT
 
 public:
     ImageLoader();
@@ -38,7 +38,7 @@ public:
         usage.append("   -loadtest <filepath>                                                                                 \n");
         usage.append("   -convert  <source file>    <target file>                                                             \n");
         usage.append("   -convert8 <source file>    <target file>                                                             \n");
-	usage.append("   -convert3 <source file>    <target file>                                                             \n");
+        usage.append("   -convert3 <source file>    <target file>                                                             \n");
         usage.append("   -mip <stack input filepath>  <2D mip tif output filepath> [-flipy]                                   \n");
         usage.append("   -mapchannels <sourcestack> <targetstack> <csv map string, eg, \"0,1,2,0\" maps s0 to t1 and s2 to t0>\n");
         return usage;

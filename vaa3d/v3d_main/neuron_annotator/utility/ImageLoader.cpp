@@ -87,7 +87,7 @@ int ImageLoader::processArgs(vector<char*> *argList) {
             } while(!done && i<(argList->size()-1));
         } else if (arg=="-convert3") {
             mode=MODE_CONVERT3;
-	    qDebug() << "ImageLoader::processArgs: setting mode to MODE_CONVERT3";
+            qDebug() << "ImageLoader::processArgs: setting mode to MODE_CONVERT3";
             bool haveInput=false;
             do {
                 QString possibleFile=(*argList)[++i];
@@ -131,8 +131,8 @@ int ImageLoader::processArgs(vector<char*> *argList) {
             targetFilepath=(*argList)[targetPosition];
             mapChannelString=(*argList)[mapPosition];
             if (inputFilepath.startsWith("-") ||
-                targetFilepath.startsWith("-") ||
-                mapChannelString.startsWith("-")) {
+                    targetFilepath.startsWith("-") ||
+                    mapChannelString.startsWith("-")) {
                 qDebug() << "Please see usage for -mapchannels option";
                 return 1;
             }
@@ -163,7 +163,7 @@ bool ImageLoader::execute() {
         }
         return false;
     } else if (mode==MODE_CONVERT || mode==MODE_CONVERT8 || mode==MODE_CONVERT3) {
-      qDebug() << "ImageLoader::execute() mode=" << mode;
+        qDebug() << "ImageLoader::execute() mode=" << mode;
         if (inputFilepath.compare(targetFilepath)==0) {
             qDebug() << "ImageLoader::execute() - can not convert a file to itself";
             return false;
@@ -250,12 +250,12 @@ bool ImageLoader::mapChannels() {
     }
     Image4DProxy<My4DImage> targetProxy(targetImage);
     if (sourceProxy.sx==targetProxy.sx &&
-        sourceProxy.sy==targetProxy.sy &&
-        sourceProxy.sz==targetProxy.sz) {
+            sourceProxy.sy==targetProxy.sy &&
+            sourceProxy.sz==targetProxy.sz) {
         qDebug() << "Verified that source and target x y z dimensions match";
     } else {
         qDebug() << "Source sx=" << sourceProxy.sx << " sy=" << sourceProxy.sy << " sz=" << sourceProxy.sz << " Target tx=" <<
-                targetProxy.sx << " ty=" << targetProxy.sy << " tz=" << targetProxy.sz << " dimensions do not match";
+                    targetProxy.sx << " ty=" << targetProxy.sy << " tz=" << targetProxy.sz << " dimensions do not match";
         return false;
     }
     if (maxSourceChannel>=sourceProxy.sc) {
@@ -387,13 +387,13 @@ unsigned char * ImageLoader::convertType2Type1(My4DImage *image) {
         for (V3DLONG s2=0;s2<sz[2];s2++) {
             for (V3DLONG s1=0;s1<sz[1];s1++) {
                 for (V3DLONG s0=0;s0<sz[0];s0++) {
-		  unsigned int v = (*proxy.at_uint16(s0,s1,s2,s3));
-		  if (v>4095) {
-		    // True 16-bit
-		    divisor=256;
-		    break;
-		  }
-		}
+                    unsigned int v = (*proxy.at_uint16(s0,s1,s2,s3));
+                    if (v>4095) {
+                        // True 16-bit
+                        divisor=256;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -403,8 +403,8 @@ unsigned char * ImageLoader::convertType2Type1(My4DImage *image) {
         for (V3DLONG s2=0;s2<sz[2];s2++) {
             for (V3DLONG s1=0;s1<sz[1];s1++) {
                 for (V3DLONG s0=0;s0<sz[0];s0++) {
-		  unsigned int v = (*proxy.at_uint16(s0,s1,s2,s3));
-		  unsigned int v8 = v/divisor;
+                    unsigned int v = (*proxy.at_uint16(s0,s1,s2,s3));
+                    unsigned int v8 = v/divisor;
                     if (v8>255) {
                         v8=255;
                     }
@@ -418,7 +418,7 @@ unsigned char * ImageLoader::convertType2Type1(My4DImage *image) {
 
 
 bool ImageLoader::validateFile() {
-  return validateFile(inputFilepath);
+    return validateFile(inputFilepath);
 }
 
 bool ImageLoader::validateFile(QString filename) {
@@ -465,10 +465,10 @@ bool ImageLoader::loadImage(Image4DSimple * stackp, QUrl url)
 
 bool ImageLoader::loadImage(Image4DSimple * stackp, const char* filepath)
 {
-  QString qFilepath(filepath);
-  if (!validateFile(qFilepath)) {
-    return false;
-  }
+    QString qFilepath(filepath);
+    if (!validateFile(qFilepath)) {
+        return false;
+    }
 
     // qDebug() << "loadImage stack string" << filepath << __FILE__ << __LINE__;
     bool bSucceeded = false;
@@ -507,10 +507,10 @@ My4DImage* ImageLoader::loadImage(QUrl url) {
 }
 
 My4DImage* ImageLoader::loadImage(const char* filepath) {
-  QString qFilepath(filepath);
-  if (!validateFile(qFilepath)) {
-    return 0L;
-  }
+    QString qFilepath(filepath);
+    if (!validateFile(qFilepath)) {
+        return 0L;
+    }
     // qDebug() << "Starting to load file " << filepath << __FILE__ << __LINE__;
     My4DImage* image=new My4DImage();
     loadImage(image, filepath);
@@ -518,17 +518,17 @@ My4DImage* ImageLoader::loadImage(const char* filepath) {
 }
 
 bool ImageLoader::saveImage(My4DImage * stackp, const char* filepath, bool saveTo8bit) {
-  qDebug() << "ImageLoader::saveImage (bool version)";
-  if (saveTo8bit) {
-    return saveImageByMode(stackp, filepath, MODE_CONVERT8);
-  } else {
-    return saveImageByMode(stackp, filepath, MODE_CONVERT);
-  }
+    qDebug() << "ImageLoader::saveImage (bool version)";
+    if (saveTo8bit) {
+        return saveImageByMode(stackp, filepath, MODE_CONVERT8);
+    } else {
+        return saveImageByMode(stackp, filepath, MODE_CONVERT);
+    }
 }
 
 bool ImageLoader::saveImageByMode(My4DImage * stackp, const char* filepath, int saveMode)
 {
-  qDebug() << "Saving to file " << filepath << " under mode=" << saveMode;
+    qDebug() << "Saving to file " << filepath << " under mode=" << saveMode;
     QString extension = QFileInfo(QString(filepath)).suffix().toLower();
     if (saveMode==MODE_CONVERT8 || saveMode==MODE_CONVERT3) {
         convertType2Type1InPlace(stackp);
@@ -541,13 +541,13 @@ bool ImageLoader::saveImageByMode(My4DImage * stackp, const char* filepath, int 
         sz[3] = stackp->getCDim();
         unsigned char* data = 0;
         data = stackp->getRawData();
-	if (saveMode==MODE_CONVERT3) {
-	  // using V3D_UNKNOWN as a signal to do 3-bit PBD compression, since we are also assuming the stack has been converted to 8-bit in this case
-	  qDebug() << "ImageLoader::saveImageByMode: calling saveStack2RawPBD with datatype = V3D_UNKNOWN";
-	  saveStack2RawPBD(filepath, V3D_UNKNOWN, data, sz);
-	} else {
-	  saveStack2RawPBD(filepath, stackp->getDatatype(), data, sz);
-	}
+        if (saveMode==MODE_CONVERT3) {
+            // using V3D_UNKNOWN as a signal to do 3-bit PBD compression, since we are also assuming the stack has been converted to 8-bit in this case
+            qDebug() << "ImageLoader::saveImageByMode: calling saveStack2RawPBD with datatype = V3D_UNKNOWN";
+            saveStack2RawPBD(filepath, V3D_UNKNOWN, data, sz);
+        } else {
+            saveStack2RawPBD(filepath, stackp->getDatatype(), data, sz);
+        }
     }
 #ifdef USE_FFMPEG
     else if (extension == "mp4") {
@@ -600,7 +600,7 @@ int ImageLoader::loadRaw2StackPBDFromUrl(QUrl url, Image4DSimple * image, bool u
     QEventLoop loop; // for synchronous url fetch http://stackoverflow.com/questions/5486090/qnetworkreply-wait-for-finished
     QNetworkAccessManager networkManager;
     QObject::connect(&networkManager, SIGNAL(finished(QNetworkReply*)),
-            &loop, SLOT(quit()));
+                     &loop, SLOT(quit()));
     // qDebug() << "networkManager" << __FILE__ << __LINE__;
     // qDebug() << url;
     QNetworkRequest request = QNetworkRequest(url);
@@ -736,8 +736,8 @@ int ImageLoader::loadRaw2StackPBDFromStream(QIODevice& fileStream, V3DLONG fileS
         break;
 
     case PBD_3_BIT_DTYPE: // Used for PBD 3
-      datatype = PBD_3_BIT_DTYPE;
-      break;
+        datatype = PBD_3_BIT_DTYPE;
+        break;
 
     default:
         stringstream msg;
@@ -824,7 +824,7 @@ int ImageLoader::loadRaw2StackPBDFromStream(QIODevice& fileStream, V3DLONG fileS
     emit progressMessageChanged("Allocating image memory...");
     short int blankImageDataType=datatype;
     if (datatype==PBD_3_BIT_DTYPE) {
-      blankImageDataType=1;
+        blankImageDataType=1;
     }
     image->createBlankImage(sz[0], sz[1], sz[2], sz[3], blankImageDataType);
     emit progressMessageChanged("Decompressing image...");
