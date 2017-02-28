@@ -4673,8 +4673,6 @@ bool XFormWidget::loadData()
     //
     if(fileSuffix=="MASK" || fileSuffix=="CHAN")
     {
-        qDebug()<<"read mask/chan file";
-
         QStringList maskFilePaths;
 
         if(fileSuffix=="MASK")
@@ -4710,8 +4708,6 @@ bool XFormWidget::loadData()
 
         MaskChan maskChan;
         imgData = maskChan.createImageFromMaskFiles(maskFilePaths);
-
-        qDebug()<<"mask/chan file is read";
     }
     else
     {
