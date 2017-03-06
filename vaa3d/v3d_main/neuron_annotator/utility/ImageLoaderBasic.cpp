@@ -1000,7 +1000,8 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
                 d1=sourceChar;
                 d1 >>= 2;
                 d1 &= ooooolll;
-                target16Data[dp++]=target16Data[dp-1]+(d1<5?d1:4-d1);
+                target16Data[dp]=target16Data[dp-1]+(d1<5?d1:4-d1);
+                dp++;
                 //if (debug) qDebug() << "debug: position " << (dp-1) << " diff value=" << target16Data[dp-1];
                 leftToFill--;
                 if (leftToFill==0) {
@@ -1017,7 +1018,8 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
                 carryOver <<= 1;
                 d0 >>= 7;
                 d0 |= carryOver;
-                target16Data[dp++]=target16Data[dp-1]+(d0<5?d0:4-d0);
+                target16Data[dp]=target16Data[dp-1]+(d0<5?d0:4-d0);
+                dp++;
                 //if (debug) qDebug() << "debug: position " << (dp-1) << " diff value=" << target16Data[dp-1];
                 leftToFill--;
                 if (leftToFill==0) {
@@ -1026,7 +1028,8 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
                 d1=sourceChar;
                 d1 >>= 4;
                 d1 &= ooooolll;
-                target16Data[dp++]=target16Data[dp-1]+(d1<5?d1:4-d1);
+                target16Data[dp]=target16Data[dp-1]+(d1<5?d1:4-d1);
+                dp++;
                 //if (debug) qDebug() << "debug: position " << (dp-1) << " diff value=" << target16Data[dp-1];
                 leftToFill--;
                 if (leftToFill==0) {
@@ -1035,7 +1038,8 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
                 d2=sourceChar;
                 d2 >>= 1;
                 d2 &= ooooolll;
-                target16Data[dp++]=target16Data[dp-1]+(d2<5?d2:4-d2);
+                target16Data[dp]=target16Data[dp-1]+(d2<5?d2:4-d2);
+                dp++;
                 //if (debug) qDebug() << "debug: position " << (dp-1) << " diff value=" << target16Data[dp-1];
                 leftToFill--;
                 if (leftToFill==0) {
@@ -1052,7 +1056,8 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
                 d0 >>= 6;
                 carryOver <<= 2;
                 d0 |= carryOver;
-                target16Data[dp++]=target16Data[dp-1]+(d0<5?d0:4-d0);
+                target16Data[dp]=target16Data[dp-1]+(d0<5?d0:4-d0);
+                dp++;
                 //if (debug) qDebug() << "debug: position " << (dp-1) << " diff value=" << target16Data[dp-1];
                 leftToFill--;
                 if (leftToFill==0) {
@@ -1061,7 +1066,8 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
                 d1=sourceChar;
                 d1 >>= 3;
                 d1 &= ooooolll;
-                target16Data[dp++]=target16Data[dp-1]+(d1<5?d1:4-d1);
+                target16Data[dp]=target16Data[dp-1]+(d1<5?d1:4-d1);
+                dp++;
                 //if (debug) qDebug() << "debug: position " << (dp-1) << " diff value=" << target16Data[dp-1];
                 leftToFill--;
                 if (leftToFill==0) {
@@ -1069,7 +1075,8 @@ V3DLONG ImageLoaderBasic::decompressPBD16(unsigned char * sourceData, unsigned c
                 }
                 d2=sourceChar;
                 d2 &= ooooolll;
-                target16Data[dp++]=target16Data[dp-1]+(d2<5?d2:4-d2);
+                target16Data[dp]=target16Data[dp-1]+(d2<5?d2:4-d2);
+                dp++;
                 //if (debug) qDebug() << "debug: position " << (dp-1) << " diff value=" << target16Data[dp-1];
                 leftToFill--;
                 if (leftToFill==0) {
