@@ -232,20 +232,6 @@ void Image4DSimple::loadImage(const char* filename, bool b_useMyLib)
     sz2 = tmp_sz[2];
     sz3 = tmp_sz[3]; //no longer merge the 3rd and 4th dimensions
 
-    // test
-    unsigned short maxVal = 0;
-    unsigned short *p = (unsigned short *)(this->data1d);
-
-    long totalsz = sz0*sz1*sz2;
-
-    for(long i=0; i<totalsz; i++)
-    {
-        if (maxVal < p[i])
-            maxVal = p[i];
-    }
-    printf("maxVal ... %d of %ld voxels \n",maxVal,totalsz);
-
-
     /* clean all workspace variables */
 
     if (tmp_sz) {delete []tmp_sz; tmp_sz=0;}

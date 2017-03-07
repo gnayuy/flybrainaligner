@@ -4661,7 +4661,8 @@ bool XFormWidget::loadData()
 	}
 
     //
-    const char* filename = openFileNameLabel.toStdString().c_str();
+    QByteArray ba = openFileNameLabel.toUtf8();
+    const char* filename = ba.constData();
     QFileInfo curFileInfo(openFileNameLabel);
     QString fileSuffix = curFileInfo.suffix().toUpper();
 

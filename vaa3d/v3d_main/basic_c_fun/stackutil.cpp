@@ -4040,20 +4040,6 @@ bool saveImage(const char filename[], const unsigned char * data1d, const V3DLON
 		return false;
 	}
 
-    //
-    unsigned short maxVal = 0;
-    unsigned short *p = (unsigned short *)data1d;
-
-    long totalsz = sz[0]*sz[1]*sz[2];
-
-    for(long i=0; i<totalsz; i++)
-    {
-        if (maxVal < p[i])
-            maxVal = p[i];
-    }
-    std::cout<<"maxVal ... "<<maxVal<<" of "<<totalsz<<" voxels"<<std::endl;
-    //
-
 	int dt;
     ImagePixelType curtype;
 	switch (datatype)
