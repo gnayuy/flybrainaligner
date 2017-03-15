@@ -727,7 +727,8 @@ NEURONSNII=${STRN}"_yflipIsRsRotAffRs_c0.nii"
 
 NEURONDFMD=${STRN}"NeuronAligned63xScale.nii"
 NEURONALIGNEDYFLIP=${OUTPUT}"/NeuronAligned63xScale_yflip.v3draw"
-SXNEURONALIGNED=${OUTNEURONS}"/NeuronAligned63xScale.v3draw"
+XSNEURONALIGNED_FN="NeuronAligned63xScale.v3draw"
+SXNEURONALIGNED=${OUTNEURONS}"/"${XSNEURONALIGNED_FN}
 SXNEURONALIGNEDRS=${OUTPUT}"/NeuronAligned63xScaleRS.v3draw"
 
 if ( is_file_exist "$NEURONSNII" )
@@ -845,8 +846,8 @@ echo "alignment.image.size=1450x725x436" >> $META
 echo "alignment.bounding.box=" >> $META
 echo "alignment.objective=63x" >> $META
 echo "alignment.quality.score.ncc=$SCORE" >> $META
-if [[ -f "$NEUSXALINGED" ]]; then
-    echo "neuron.masks.filename=NeuronAligned63xScale.v3draw" >> $META
+if [[ -f "$SXNEURONALIGNED" ]]; then
+    echo "neuron.masks.filename="${XSNEURONALIGNED_FN} >> $META
 fi
 echo "default=true" >> $META
 fi
