@@ -720,7 +720,7 @@ echo " NEURONSYFLIPISRSRTAFFRS: $NEURONSYFLIPISRSRTAFFRS exists"
 else
 #---exe---#
 message " Resize the neurons "
-time $Vaa3D -x ireg -f resizeImage -o $NEURONSYFLIPISRSRTAFFRS -p "#s $NEURONSYFLIPISRSRTAFF #t $TARSXRS #y 1"
+time $Vaa3D -x ireg -f resizeImage -o $NEURONSYFLIPISRSRTAFFRS -p "#s $NEURONSYFLIPISRSRTAFF #t $TARSXRS #k 1 #i 1 #y 1"
 fi
 
 NEURONSNII=${STRN}"_yflipIsRsRotAffRs_c0.nii"
@@ -758,7 +758,7 @@ echo " SXNEURONALIGNEDRS: $SXNEURONALIGNEDRS exists"
 else
 #---exe---#
 message " Resize the neurons to the tamplate's space"
-time $Vaa3D -x ireg -f resizeImage -o $SXNEURONALIGNEDRS -p "#s $NEURONALIGNEDYFLIP #t $TARSX #y 1"
+time $Vaa3D -x ireg -f resizeImage -o $SXNEURONALIGNEDRS -p "#s $NEURONALIGNEDYFLIP #t $TARSX #k 1 #i 1 #y 1"
 fi
 
 if ( is_file_exist "$SXNEURONALIGNED" )
