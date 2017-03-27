@@ -16,7 +16,7 @@
 # Example 2 (for multiple brains):
 # $for i in /nrs/scicompsoft/yuy/registration/images/*.nrrd; do j=${i%*_*}; mkdir $j; mkdir $j/images; done
 # $for i in /nrs/scicompsoft/yuy/registration/images/*.nrrd; do j=${i%*_*}; mv $j* $j/images/; done
-# $for i in /nrs/scicompsoft/yuy/registration/images/*; do sh genAlignScript.sh $i 32; done
+# $for i in /nrs/scicompsoft/yuy/registration/images/*; do sh genAlignScript.sh $i 32 $i/alignCmd.sh; done
 # $for i in /nrs/scicompsoft/yuy/registration/images/*/alignCmd.sh; do qsub -pe batch 32 -l broadwell=true -j y -b y -cwd -V $i; done
 # $qstat
 
