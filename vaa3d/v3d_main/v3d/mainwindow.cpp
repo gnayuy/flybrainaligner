@@ -580,13 +580,6 @@ void MainWindow::dropEvent(QDropEvent *event)
             QString url = urlList.at(i).path().trimmed();
             qDebug() <<tr("  drop Url data: ")+url;
 
-            QUrl rurl = urlList.at(i);
-
-            qDebug()<<rurl.path();
-            qDebug()<<rurl.toLocalFile();
-
-
-
 #ifdef WIN32
             url.remove(0,1); // remove the first '/' of "/C:/...", 081102
 #endif

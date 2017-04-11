@@ -4709,6 +4709,7 @@ bool XFormWidget::loadData()
 
         MaskChan maskChan;
         imgData = maskChan.createImageFromMaskFiles(maskFilePaths);
+        imgData->flip(axis_y);
     }
     else
     {
