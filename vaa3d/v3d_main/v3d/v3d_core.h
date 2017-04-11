@@ -380,6 +380,7 @@ public:
 
     bool rotate(ImagePlaneDisplayType ptype, const Options_Rotate & r_opt);
     bool flip(AxisCode my_axiscode);
+    bool add(My4DImage *image);
 
     bool b_proj_worm_mst_diameter_set;
 

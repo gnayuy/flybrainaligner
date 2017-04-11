@@ -151,6 +151,7 @@ public:
     bool importGeneralImgSeries(const QStringList & mylist, TimePackType timepacktype);
 
     bool loadFile(QString filename);
+    bool addFile(QString filename);
     bool importGeneralImageFile(QString filename);
     bool importLeicaFile(QString filename);
     QString userFriendlyCurrentFile() {return (openFileNameLabel);}

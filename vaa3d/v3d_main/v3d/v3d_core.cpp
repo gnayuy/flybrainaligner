@@ -4627,6 +4627,64 @@ bool XFormWidget::loadFile(QString filename)
 	}
 }
 
+bool XFormWidget::addFile(QString filename)
+{
+    if (!filename.isEmpty())
+    {
+        openFileNameLabel = filename;
+
+        //
+        QFileInfo curFileInfo(openFileNameLabel);
+        QString fileSuffix = curFileInfo.suffix().toUpper();
+
+        //
+        if(fileSuffix=="MASK" || fileSuffix=="CHAN")
+        {
+            QStringList maskFilePaths;
+
+            if(fileSuffix=="MASK")
+            {
+                 maskFilePaths << curFileInfo.filePath();
+            }
+            else
+            {
+                QString maskFile = curFileInfo.filePath().section(".",0,0).append(".mask");
+
+                if(QFileInfo(maskFile).exists())
+                {
+                    maskFilePaths << maskFile;
+                }
+                else
+                {
+                    qDebug()<<"corresponding .mask file " << maskFile << " is missing";
+                    return false;
+                }
+            }
+
+            MaskChan maskChan;
+
+            if(!imgData)
+            {
+                imgData = maskChan.createImageFromMaskFiles(maskFilePaths);
+                imgData->flip(axis_y);
+            }
+            else
+            {
+                My4DImage *maskImg = maskChan.createImageFromMaskFiles(maskFilePaths);
+                maskImg->flip(axis_y);
+                imgData->add(maskImg);
+            }
+        }
+    }
+    else
+    {
+        qDebug()<<"Empty input file for reading";
+        return false;
+    }
+
+    return true;
+}
+
 bool XFormWidget::loadData()
 {
 	//try to get a rough estimation of available amount of memory

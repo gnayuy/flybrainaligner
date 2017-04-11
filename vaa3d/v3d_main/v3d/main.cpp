@@ -186,13 +186,26 @@ int main(int argc, char **argv)
 			}
 			else
 			{
+                QString pre_suffix;
 				for(int i=0; i<parser.i_v3d.fileList.size(); i++)
 				{
+                    bool b_openinonewindow = false;
 					char *filename = parser.i_v3d.fileList.at(i);
 
 					v3d_msg("now try open files ...", 0);
 
 					QString qFile(filename);
+                    QFileInfo curFileInfo(filename);
+                    QString cur_suffix = curFileInfo.suffix().toUpper();
+
+                    if (i>0 && (cur_suffix=="MASK" || cur_suffix=="CHAN") && (pre_suffix=="MASK" || pre_suffix=="CHAN"))
+                    {
+                        b_openinonewindow = true;
+                    }
+                    else
+                    {
+                        b_openinonewindow = false;
+                    }
 
 					if(!QFile(qFile).exists()) // supporting both local and web files. Nov. 18, 2010. YuY
 					{
@@ -223,10 +236,11 @@ int main(int argc, char **argv)
 					}
 					else
 					{
-						QString curSuffix = QFileInfo(qFile).suffix();
 						// load image/object
-						mainWin->loadV3DFile(filename, true, parser.i_v3d.open3Dviewer);
+                        mainWin->loadV3DFile(filename, true, parser.i_v3d.open3Dviewer, b_openinonewindow);
 					}
+
+                    pre_suffix = cur_suffix;
 				}
 			}
 

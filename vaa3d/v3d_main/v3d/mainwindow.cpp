@@ -42,9 +42,9 @@ Sept 30, 2008: disable  open in the same window function, also add flip image fu
 ****************************************************************************/
 #include "../3drenderer/v3dr_common.h"
 #ifdef USE_Qt5
-  #include <QtWidgets>
+#include <QtWidgets>
 #else
-  #include <QtGui>
+#include <QtGui>
 #endif
 #include "mainwindow.h"
 #include "v3d_application.h"
@@ -369,10 +369,10 @@ void MainWindow::updateRunPlugin() //20110426 YuY
             foreach(QString qstr, existingPluginsList)
             {
                 if ( qstr.contains(canonicalFilePath) ||
-                    //qstr.endsWith(canonicalFilePath) || //by PHC, 20120210
-                    //QFileInfo(qstr).fileName().endsWith(canonicalFilePath)
-                    QFileInfo(qstr).fileName().contains(canonicalFilePath)
-                    ) //20110429 YuY
+                     //qstr.endsWith(canonicalFilePath) || //by PHC, 20120210
+                     //QFileInfo(qstr).fileName().endsWith(canonicalFilePath)
+                     QFileInfo(qstr).fileName().contains(canonicalFilePath)
+                     ) //20110429 YuY
                 {
                     v3dpluginFind = qstr;
                     numfind++;
@@ -449,19 +449,19 @@ void MainWindow::updateRunPlugin() //20110426 YuY
             qint64 etime_plugin = timer_plugin.elapsed();
             qDebug() << " **** the plugin preprocessing takes [" << etime_plugin <<" milliseconds]";
             //uncommented version is only used for bench testing by Zhi Z, 20151103
-//            if(v3dclp.fileList.size()>0)
-//            {
-//                QString timer_log = QString(v3dclp.fileList.at(0)) + "_" + QFileInfo(pluginname).baseName() + "_" + pluginfunc +"_time.log";
-//                QFile file(timer_log);
-//                if (!file.open(QFile::WriteOnly|QFile::Truncate))
-//                {
-//                    cout <<"Error opening the log file "<<timer_log.toStdString().c_str() << endl;
-//                }
+            //            if(v3dclp.fileList.size()>0)
+            //            {
+            //                QString timer_log = QString(v3dclp.fileList.at(0)) + "_" + QFileInfo(pluginname).baseName() + "_" + pluginfunc +"_time.log";
+            //                QFile file(timer_log);
+            //                if (!file.open(QFile::WriteOnly|QFile::Truncate))
+            //                {
+            //                    cout <<"Error opening the log file "<<timer_log.toStdString().c_str() << endl;
+            //                }
 
-//                QTextStream stream (&file);
-//                stream << "the plugin preprocessing takes\t"<< etime_plugin <<" milliseconds"<<"\n";
-//                file.close();
-//            }
+            //                QTextStream stream (&file);
+            //                stream << "the plugin preprocessing takes\t"<< etime_plugin <<" milliseconds"<<"\n";
+            //                file.close();
+            //            }
         }
         else
         {
@@ -510,7 +510,7 @@ void MainWindow::handleCoordinatedCloseEvent_real() {
         if (p3DView)
         {
             p3DView->postClose(); //151117. PHC
-//        v3d_msg("haha");
+            //        v3d_msg("haha");
         }
     }
     //exit(1); //this is one bruteforce way to disable the strange seg fault. 080430. A simple to enhance this is to set a b_changedContent flag indicates if there is any unsaved edit of an image,
@@ -552,7 +552,8 @@ void MainWindow::dragLeaveEvent(QDragLeaveEvent *event)
 }
 void MainWindow::dropEvent(QDropEvent *event)
 {
-    QString fileName;
+    QStringList files;
+    QString fileName=NULL;
     qDebug("Vaa3D MainWindow::dropEvent");
     const QMimeData *mimeData = event->mimeData();
     if (mimeData->hasImage())
@@ -570,12 +571,15 @@ void MainWindow::dropEvent(QDropEvent *event)
 #ifdef Q_OS_LINUX
         fileName.remove(0,7); // remove the first 'file://' of the name string, 09012581102
 #endif
+        files << fileName;
         qDebug("the file to open=[%s]",qPrintable(fileName));
     }
     else if (mimeData->hasUrls())
     {
         QList<QUrl> urlList = mimeData->urls();
-        for (int i = 0; i < urlList.size() && (i < 1); ++i)
+        qDebug()<<"how many files dropped: "<<urlList.size();
+
+        for (int i = 0; i < urlList.size(); ++i) // support drop multiple files at once, yy 4/11/2017
         {
             QString url = urlList.at(i).path().trimmed();
             qDebug() <<tr("  drop Url data: ")+url;
@@ -584,19 +588,19 @@ void MainWindow::dropEvent(QDropEvent *event)
             url.remove(0,1); // remove the first '/' of "/C:/...", 081102
 #endif
 
-// @FIXED by Alessandro on 2015-05-09. Call method to fix the file-based URL (if any)
+            // @FIXED by Alessandro on 2015-05-09. Call method to fix the file-based URL (if any)
 #ifdef Q_OS_MAC
 
 #ifdef __TEST_DROP_QT5_MAC_
             if (urlList.at(i).path().startsWith("file:///.file/id=")) {
-                    QUrl url(urlList.at(i).path());
-                    CFURLRef cfurl = url.toCFURL();
-                    CFErrorRef error = 0;
-                    CFURLRef absurl = CFURLCreateFilePathURL(kCFAllocatorDefault, cfurl, &error);
-                    url = QUrl::fromCFURL(absurl);
-                    CFRelease(cfurl);
-                    CFRelease(absurl);
-                }
+                QUrl url(urlList.at(i).path());
+                CFURLRef cfurl = url.toCFURL();
+                CFErrorRef error = 0;
+                CFURLRef absurl = CFURLCreateFilePathURL(kCFAllocatorDefault, cfurl, &error);
+                url = QUrl::fromCFURL(absurl);
+                CFRelease(cfurl);
+                CFRelease(absurl);
+            }
 #endif
 
 #ifdef _ENABLE_MACX_DRAG_DROP_FIX_
@@ -606,6 +610,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 #endif
 
             fileName = url;
+            files << fileName;
             qDebug() <<tr("  the file to open: [")+ fileName +("]");
         }
         event->acceptProposedAction();
@@ -618,13 +623,68 @@ void MainWindow::dropEvent(QDropEvent *event)
     fileName.replace("%20"," ");//fixed the space path issue on Linux machine by Zhi Zhou May 14 2015
 #endif
 
-    //
-    if (!QFile::exists(fileName))
+    // support open multiple mask/chan files, 4/11/2017 yy
+    QString pre_suffix;
+    for(int i=0; i<files.size(); i++)
     {
-        v3d_msg(QString("The file [%1] specified does not exist").arg(fileName));
-        return;
+        bool b_openinonewindow = false;
+        fileName = files.at(i);
+
+        QFileInfo curFileInfo(fileName);
+        QString cur_suffix = curFileInfo.suffix().toUpper();
+
+        if (i>0 && (cur_suffix=="MASK" || cur_suffix=="CHAN") && (pre_suffix=="MASK" || pre_suffix=="CHAN"))
+        {
+            b_openinonewindow = true;
+        }
+        else
+        {
+            b_openinonewindow = false;
+        }
+
+        if(!QFile(fileName).exists()) // supporting both local and web files. Nov. 18, 2010. YuY
+        {
+            // judge whether the file exists on the web
+            // "://" like "http://" "https://" "ftp://"
+
+            if(fileName.contains("://"))
+            {
+                QUrl url(fileName);
+
+                if(!url.isValid()) // valid or invalid url
+                {
+                    v3d_msg(QString("The file path [%1] is not valid! Do nothing.").arg(fileName));
+                    return;
+                }
+                else if(url.scheme().toUpper() == "HTTP" || url.scheme().toUpper() == "HTTPS" || url.scheme().toUpper() == "FTP")
+                {
+                    // load image/object
+                    loadV3DUrl(QUrl(fileName), true, global_setting.b_autoOpenImg3DViewer);
+                }
+                //how about smb:// etc?? //by PHC, 20101123 question
+            }
+            else // impossible be a url
+            {
+                v3d_msg(QString("The file path [%1] seems invalid (not a local file or a URL)! Do nothing.").arg(fileName));
+                return;
+            }
+        }
+        else
+        {
+            // load image/object
+            loadV3DFile(fileName, true, global_setting.b_autoOpenImg3DViewer, b_openinonewindow);
+        }
+
+        pre_suffix = cur_suffix;
     }
-    loadV3DFile(fileName, true, global_setting.b_autoOpenImg3DViewer); // loadV3DFile func changed to 3 args. YuY Nov. 18, 2010
+
+    //
+//    if (!QFile::exists(fileName))
+//    {
+//        v3d_msg(QString("The file [%1] specified does not exist").arg(fileName));
+//        return;
+//    }
+//    loadV3DFile(fileName, true, global_setting.b_autoOpenImg3DViewer); // loadV3DFile func changed to 3 args. YuY Nov. 18, 2010
     setBackgroundRole(QPalette::Dark);
     event->acceptProposedAction();
 }
@@ -637,8 +697,63 @@ void MainWindow::newFile()
 }
 void MainWindow::open()
 {
-    QString fileName = QFileDialog::getOpenFileName(this);
-    loadV3DFile(fileName, true, global_setting.b_autoOpenImg3DViewer); // loadV3DFile func changed to 3 args. YuY Nov. 18, 2010. change false to global_setting.b_autoOpenImg3DViewer. 2011-02-09, PHC
+//    QString fileName = QFileDialog::getOpenFileName(this);
+//    loadV3DFile(fileName, true, global_setting.b_autoOpenImg3DViewer); // loadV3DFile func changed to 3 args. YuY Nov. 18, 2010. change false to global_setting.b_autoOpenImg3DViewer. 2011-02-09, PHC
+
+    QStringList files = QFileDialog::getOpenFileNames(this); // support open multiple mask/chan files, 4/11/2017 yy
+    QString pre_suffix;
+    for(int i=0; i<files.size(); i++)
+    {
+        bool b_openinonewindow = false;
+        QString fileName = files.at(i);
+
+        QFileInfo curFileInfo(fileName);
+        QString cur_suffix = curFileInfo.suffix().toUpper();
+
+        if (i>0 && (cur_suffix=="MASK" || cur_suffix=="CHAN") && (pre_suffix=="MASK" || pre_suffix=="CHAN"))
+        {
+            b_openinonewindow = true;
+        }
+        else
+        {
+            b_openinonewindow = false;
+        }
+
+        if(!QFile(fileName).exists()) // supporting both local and web files. Nov. 18, 2010. YuY
+        {
+            // judge whether the file exists on the web
+            // "://" like "http://" "https://" "ftp://"
+
+            if(fileName.contains("://"))
+            {
+                QUrl url(fileName);
+
+                if(!url.isValid()) // valid or invalid url
+                {
+                    v3d_msg(QString("The file path [%1] is not valid! Do nothing.").arg(fileName));
+                    return;
+                }
+                else if(url.scheme().toUpper() == "HTTP" || url.scheme().toUpper() == "HTTPS" || url.scheme().toUpper() == "FTP")
+                {
+                    // load image/object
+                    loadV3DUrl(QUrl(fileName), true, global_setting.b_autoOpenImg3DViewer);
+                }
+                //how about smb:// etc?? //by PHC, 20101123 question
+            }
+            else // impossible be a url
+            {
+                v3d_msg(QString("The file path [%1] seems invalid (not a local file or a URL)! Do nothing.").arg(fileName));
+                return;
+            }
+        }
+        else
+        {
+            // load image/object
+            loadV3DFile(fileName, true, global_setting.b_autoOpenImg3DViewer, b_openinonewindow);
+        }
+
+        pre_suffix = cur_suffix;
+    }
 }
 // By CMB Oct-08-2010
 // Ask user for URL to download image stack from.
@@ -766,7 +881,7 @@ V3dR_MainWindow * MainWindow::find3DViewer(QString fileName)
         for (int i=0; i<list_3Dview_win.size(); i++)
         {
             if ( list_3Dview_win.at(i)->getDataTitle().endsWith(canonicalFilePath) ||
-                QFileInfo(list_3Dview_win.at(i)->getDataTitle()).fileName().endsWith(canonicalFilePath) ) //20110427 YuY
+                 QFileInfo(list_3Dview_win.at(i)->getDataTitle()).fileName().endsWith(canonicalFilePath) ) //20110427 YuY
             {
                 v3dRMWFind = list_3Dview_win.at(i);
                 numfind++;
@@ -787,7 +902,7 @@ V3dR_MainWindow * MainWindow::find3DViewer(QString fileName)
         return 0;
     }
 }
-void MainWindow::loadV3DFile(QString fileName, bool b_putinrecentfilelist, bool b_forceopen3dviewer)
+void MainWindow::loadV3DFile(QString fileName, bool b_putinrecentfilelist, bool b_forceopen3dviewer, bool b_openinonewindow)
 {
     if (!fileName.isEmpty())
     {
@@ -947,7 +1062,7 @@ void MainWindow::loadV3DFile(QString fileName, bool b_putinrecentfilelist, bool 
             }
         }
         else if (cur_suffix=="MARKER" ||  cur_suffix=="CSV")
-                 //added by PHC, 20130420.
+            //added by PHC, 20130420.
         {
             v3d_msg("Directly loading a marker or csv file into Vaa3D's main window is ambiguous. \n"
                     "You can either open it directly in a 3D viewer window of an image, or literally associate \n"
@@ -1087,71 +1202,86 @@ void MainWindow::loadV3DFile(QString fileName, bool b_putinrecentfilelist, bool 
             try
             {
                 size_t start_t = clock();
-                XFormWidget *child = createMdiChild();
+
                 v3d_msg(QString("Trying to load an image file [%1]").arg(fileName), 0);
 
-                if (child->loadFile(fileName))
+                XFormWidget *child;
+
+                if(b_openinonewindow)
                 {
-//                    if(!child) return;
-//                    if(!child->getImageData()) return;
-
-                    //if(child->getValidZslice()<child->getImageData()->getZDim()-1) return; // avoid crash when the child is closed by user, Dec 29, 2010 by YuY
-                    //bug!!! by PHC. This is a very bad bug. 2011-02-09. this makes all subsequent operations unable to finish. should be disabled!!.
-
-                    statusBar()->showMessage(QString("File [%1] loaded").arg(fileName), 2000);
-                    if (global_setting.b_autoConvert2_8bit)
+                    child = activeMdiChild();
+                    if(child->addFile(fileName))
                     {
-                        if (global_setting.default_rightshift_bits<0) //when set as -1 or other <0 values, then invoke the dialog.
-                        {
-                            if (child->getImageData()->getDatatype()==V3D_UINT16)
-                                child->popupImageProcessingDialog(tr(" -- convert 16bit image to 8 bit"));
-                            else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
-                                child->popupImageProcessingDialog(tr(" -- convert 32bit (single-precision float) image to 8 bit"));
-                        }
-                        else //otherwise do the conversion directly
-                        {
-                            if (child->getImageData()->getDatatype()==V3D_UINT16)
-                                child->getImageData()->proj_general_convert16bit_to_8bit(global_setting.default_rightshift_bits);
-                            else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
-                                child->getImageData()->proj_general_convert32bit_to_8bit(global_setting.default_rightshift_bits);
-                        }
+                        child->show();
                     }
-                    if (global_setting.b_yaxis_up)
-                    {
-                        child->getImageData()->flip(axis_y);
-                    }
-                    child->show();
-                    //workspace->cascade(); //080821 //110805, by PHC, since RZC claims the resize MDI works now, so this should not be needed.
-                    // create sampled data 512x512x256 and save it for use in 3dviewer
-                    // to improve openning speed. ZJL 111019
-                    // qDebug("   child->mypara_3Dview = %0p", &(child->mypara_3Dview));
-                    // saveDataFor3DViewer( &(child->mypara_3Dview));
-                    if (b_forceopen3dviewer || (global_setting.b_autoOpenImg3DViewer))
-                    {
-                        child->doImage3DView();
-                    }
-                    size_t end_t = clock();
-                    qDebug()<<"time consume ..."<<end_t-start_t;
                 }
                 else
                 {
-                    child->close();
-                    if (QMessageBox::question(0, "File Open options",
-                                              QString("Cannot open the specified image [%1] using Vaa3D's default file opener. "
-                                              "Do you want to try other file opener in Vaa3D plugins?").arg(fileName), QMessageBox::Yes, QMessageBox::No)
-                            == QMessageBox::Yes)
-                    {
-                        //call 3rd party file loader //20131125. by PHC
-                        //(QString("").arg(fileName));
+                    child = createMdiChild();
 
-                        v3d_imaging_paras myimagingp;
-                        myimagingp.OPS = "Load file using Vaa3D data IO manager";
-                        myimagingp.datafilename = fileName;
-                        myimagingp.imgp = 0; //the image data for a plugin to call
-                        //do data loading
-                        if (!v3d_imaging(this, myimagingp))
-                            v3d_msg("Even the data IO manager cannot load this file. You need to use 3rd party converter to convert the file format first.");
-                        return;
+                    if (child->loadFile(fileName))
+                    {
+                        //                    if(!child) return;
+                        //                    if(!child->getImageData()) return;
+
+                        //if(child->getValidZslice()<child->getImageData()->getZDim()-1) return; // avoid crash when the child is closed by user, Dec 29, 2010 by YuY
+                        //bug!!! by PHC. This is a very bad bug. 2011-02-09. this makes all subsequent operations unable to finish. should be disabled!!.
+
+                        statusBar()->showMessage(QString("File [%1] loaded").arg(fileName), 2000);
+                        if (global_setting.b_autoConvert2_8bit)
+                        {
+                            if (global_setting.default_rightshift_bits<0) //when set as -1 or other <0 values, then invoke the dialog.
+                            {
+                                if (child->getImageData()->getDatatype()==V3D_UINT16)
+                                    child->popupImageProcessingDialog(tr(" -- convert 16bit image to 8 bit"));
+                                else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
+                                    child->popupImageProcessingDialog(tr(" -- convert 32bit (single-precision float) image to 8 bit"));
+                            }
+                            else //otherwise do the conversion directly
+                            {
+                                if (child->getImageData()->getDatatype()==V3D_UINT16)
+                                    child->getImageData()->proj_general_convert16bit_to_8bit(global_setting.default_rightshift_bits);
+                                else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
+                                    child->getImageData()->proj_general_convert32bit_to_8bit(global_setting.default_rightshift_bits);
+                            }
+                        }
+                        if (global_setting.b_yaxis_up)
+                        {
+                            child->getImageData()->flip(axis_y);
+                        }
+                        child->show();
+                        //workspace->cascade(); //080821 //110805, by PHC, since RZC claims the resize MDI works now, so this should not be needed.
+                        // create sampled data 512x512x256 and save it for use in 3dviewer
+                        // to improve openning speed. ZJL 111019
+                        // qDebug("   child->mypara_3Dview = %0p", &(child->mypara_3Dview));
+                        // saveDataFor3DViewer( &(child->mypara_3Dview));
+                        if (b_forceopen3dviewer || (global_setting.b_autoOpenImg3DViewer))
+                        {
+                            child->doImage3DView();
+                        }
+                        size_t end_t = clock();
+                        qDebug()<<"time consume ..."<<end_t-start_t;
+                    }
+                    else
+                    {
+                        child->close();
+                        if (QMessageBox::question(0, "File Open options",
+                                                  QString("Cannot open the specified image [%1] using Vaa3D's default file opener. "
+                                                          "Do you want to try other file opener in Vaa3D plugins?").arg(fileName), QMessageBox::Yes, QMessageBox::No)
+                                == QMessageBox::Yes)
+                        {
+                            //call 3rd party file loader //20131125. by PHC
+                            //(QString("").arg(fileName));
+
+                            v3d_imaging_paras myimagingp;
+                            myimagingp.OPS = "Load file using Vaa3D data IO manager";
+                            myimagingp.datafilename = fileName;
+                            myimagingp.imgp = 0; //the image data for a plugin to call
+                            //do data loading
+                            if (!v3d_imaging(this, myimagingp))
+                                v3d_msg("Even the data IO manager cannot load this file. You need to use 3rd party converter to convert the file format first.");
+                            return;
+                        }
                     }
                 }
             }
@@ -1371,105 +1501,105 @@ void MainWindow::loadV3DFile(QString fileName, bool b_putinrecentfilelist, bool 
                                 "The file may have certain problem - check the file format, or is simply too big but you don't have enough memory.").arg(fileName));
             }
         }
-//		else if (cur_suffix=="HRAW") // For openning hierarchical data from large data set. ZJL 20120302
-//        {
-//			QString basename = curfile_info.baseName();
-//
-//			QString hraw_prefix = "test";//""curfile_info.absolutePath()  + basename.left(basename.indexOf(".")); // before the first "."
-//
-//			string prefix = hraw_prefix.toStdString();
-//			//string prefix ="/Volumes/PengMapView/mapview_testdata/ananya/test";
-//
-//             try
-//             {
-//                  size_t start_t = clock();
-//
-//                  // contents of .hraw file
-//                  // L, M, N, l, m, n
-//                  // level : level nums
-//                  // outsz[3]
-//
-//                  int L = 14; //log(8)/log(2.0);
-//                  int M = 38; //log(8)/log(2.0);
-//                  int N = 3;  //log(8)/log(2.0);
-//                  int l = 512;//log(256)/log(2.0);
-//                  int m = 256;//log(128)/log(2.0);
-//                  int n = 64; //log(64)/log(2.0);
-//                  int level = 0;
-//
-//                  ImageMapView mapview;
-//                  mapview.setPara(prefix, L, M, N, l, m, n);
-//
-//                  unsigned char * outimg1d = 0;
-//                  V3DLONG origin[3] = {0, 0, 0};
-//                  V3DLONG outsz[4] = {512, 256, 64, 1};
-//
-//                  mapview.getImage(level, outimg1d, origin[0], origin[1], origin[2], outsz[0], outsz[1], outsz[2]);
-//
-//                  XFormWidget *child = createMdiChild();
-//                  child->setImageData(outimg1d, outsz[0], outsz[1], outsz[2], outsz[3], V3D_UINT8);
-//                  child->mypara_3Dview.image4d = child->getImageData();
-//
-//                  // mapview control
-//                  Mapview_Paras mv_paras;
-//                  mv_paras.L=L; mv_paras.M=M; mv_paras.N=N;
-//                  mv_paras.l=l; mv_paras.m=m; mv_paras.n=n;
-//                  mv_paras.origin[0] = origin[0]; mv_paras.origin[1] = origin[1]; mv_paras.origin[2] = origin[2];
-//                  mv_paras.outsz[0] = outsz[0]; mv_paras.outsz[1] = outsz[1]; mv_paras.outsz[2] = outsz[2]; mv_paras.outsz[3] = outsz[3]; mv_paras.outsz[3] = outsz[3];
-//                  mv_paras.hraw_prefix=hraw_prefix;
-//                  mv_paras.level = level;
-//
-//                  child->mapview_paras = mv_paras;
-//                  child->mapview = mapview;
-//
-//                  child->setWindowTitle_Prefix(hraw_prefix.toAscii());
-//                  child->setWindowTitle_Suffix("");
-//
-//                  child->reset();
-//
-//                  if (global_setting.b_autoConvert2_8bit)
-//                  {
-//                       if (global_setting.default_rightshift_bits<0) //when set as -1 or other <0 values, then invoke the dialog.
-//                       {
-//                            if (child->getImageData()->getDatatype()==V3D_UINT16)
-//                                 child->popupImageProcessingDialog(tr(" -- convert 16bit image to 8 bit"));
-//                            else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
-//                                 child->popupImageProcessingDialog(tr(" -- convert 32bit (single-precision float) image to 8 bit"));
-//                       }
-//                       else //otherwise do the conversion directly
-//                       {
-//                            if (child->getImageData()->getDatatype()==V3D_UINT16)
-//                                 child->getImageData()->proj_general_convert16bit_to_8bit(global_setting.default_rightshift_bits);
-//                            else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
-//                                 child->getImageData()->proj_general_convert32bit_to_8bit(global_setting.default_rightshift_bits);
-//                       }
-//                  }
-//
-//                  if (global_setting.b_yaxis_up)
-//                  {
-//                       child->getImageData()->flip(axis_y);
-//                  }
-//
-//                  child->show();
-//
-//                  // create mapview control window
-//                  child->createMapviewControlWin();
-//
-//                  if (b_forceopen3dviewer || (global_setting.b_autoOpenImg3DViewer))
-//                  {
-//                       child->doImage3DView();
-//                  }
-//
-//                  size_t end_t = clock();
-//                  qDebug()<<"time consume ..."<<end_t-start_t;
-//
-//             }
-//             catch(...)
-//             {
-//                  QMessageBox::warning(0, "warning: fail to create window", "You fail to open a new window for the specified image. The file may have certain problem, or is simply too big but you don't have enough memory.");
-//                  v3d_msg(QString("Fail to create window for the file [%1]\n").arg(fileName));
-//             }
-//        } // end hraw
+        //		else if (cur_suffix=="HRAW") // For openning hierarchical data from large data set. ZJL 20120302
+        //        {
+        //			QString basename = curfile_info.baseName();
+        //
+        //			QString hraw_prefix = "test";//""curfile_info.absolutePath()  + basename.left(basename.indexOf(".")); // before the first "."
+        //
+        //			string prefix = hraw_prefix.toStdString();
+        //			//string prefix ="/Volumes/PengMapView/mapview_testdata/ananya/test";
+        //
+        //             try
+        //             {
+        //                  size_t start_t = clock();
+        //
+        //                  // contents of .hraw file
+        //                  // L, M, N, l, m, n
+        //                  // level : level nums
+        //                  // outsz[3]
+        //
+        //                  int L = 14; //log(8)/log(2.0);
+        //                  int M = 38; //log(8)/log(2.0);
+        //                  int N = 3;  //log(8)/log(2.0);
+        //                  int l = 512;//log(256)/log(2.0);
+        //                  int m = 256;//log(128)/log(2.0);
+        //                  int n = 64; //log(64)/log(2.0);
+        //                  int level = 0;
+        //
+        //                  ImageMapView mapview;
+        //                  mapview.setPara(prefix, L, M, N, l, m, n);
+        //
+        //                  unsigned char * outimg1d = 0;
+        //                  V3DLONG origin[3] = {0, 0, 0};
+        //                  V3DLONG outsz[4] = {512, 256, 64, 1};
+        //
+        //                  mapview.getImage(level, outimg1d, origin[0], origin[1], origin[2], outsz[0], outsz[1], outsz[2]);
+        //
+        //                  XFormWidget *child = createMdiChild();
+        //                  child->setImageData(outimg1d, outsz[0], outsz[1], outsz[2], outsz[3], V3D_UINT8);
+        //                  child->mypara_3Dview.image4d = child->getImageData();
+        //
+        //                  // mapview control
+        //                  Mapview_Paras mv_paras;
+        //                  mv_paras.L=L; mv_paras.M=M; mv_paras.N=N;
+        //                  mv_paras.l=l; mv_paras.m=m; mv_paras.n=n;
+        //                  mv_paras.origin[0] = origin[0]; mv_paras.origin[1] = origin[1]; mv_paras.origin[2] = origin[2];
+        //                  mv_paras.outsz[0] = outsz[0]; mv_paras.outsz[1] = outsz[1]; mv_paras.outsz[2] = outsz[2]; mv_paras.outsz[3] = outsz[3]; mv_paras.outsz[3] = outsz[3];
+        //                  mv_paras.hraw_prefix=hraw_prefix;
+        //                  mv_paras.level = level;
+        //
+        //                  child->mapview_paras = mv_paras;
+        //                  child->mapview = mapview;
+        //
+        //                  child->setWindowTitle_Prefix(hraw_prefix.toAscii());
+        //                  child->setWindowTitle_Suffix("");
+        //
+        //                  child->reset();
+        //
+        //                  if (global_setting.b_autoConvert2_8bit)
+        //                  {
+        //                       if (global_setting.default_rightshift_bits<0) //when set as -1 or other <0 values, then invoke the dialog.
+        //                       {
+        //                            if (child->getImageData()->getDatatype()==V3D_UINT16)
+        //                                 child->popupImageProcessingDialog(tr(" -- convert 16bit image to 8 bit"));
+        //                            else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
+        //                                 child->popupImageProcessingDialog(tr(" -- convert 32bit (single-precision float) image to 8 bit"));
+        //                       }
+        //                       else //otherwise do the conversion directly
+        //                       {
+        //                            if (child->getImageData()->getDatatype()==V3D_UINT16)
+        //                                 child->getImageData()->proj_general_convert16bit_to_8bit(global_setting.default_rightshift_bits);
+        //                            else if (child->getImageData()->getDatatype()==V3D_FLOAT32)
+        //                                 child->getImageData()->proj_general_convert32bit_to_8bit(global_setting.default_rightshift_bits);
+        //                       }
+        //                  }
+        //
+        //                  if (global_setting.b_yaxis_up)
+        //                  {
+        //                       child->getImageData()->flip(axis_y);
+        //                  }
+        //
+        //                  child->show();
+        //
+        //                  // create mapview control window
+        //                  child->createMapviewControlWin();
+        //
+        //                  if (b_forceopen3dviewer || (global_setting.b_autoOpenImg3DViewer))
+        //                  {
+        //                       child->doImage3DView();
+        //                  }
+        //
+        //                  size_t end_t = clock();
+        //                  qDebug()<<"time consume ..."<<end_t-start_t;
+        //
+        //             }
+        //             catch(...)
+        //             {
+        //                  QMessageBox::warning(0, "warning: fail to create window", "You fail to open a new window for the specified image. The file may have certain problem, or is simply too big but you don't have enough memory.");
+        //                  v3d_msg(QString("Fail to create window for the file [%1]\n").arg(fileName));
+        //             }
+        //        } // end hraw
         else // changed by YuY Nov. 19, 2010. Msg corrected by PHC, 2011-06-04
         {
             v3d_msg(QString("The file [%1] has an unsupported file name extension and cannot be opened properly! "
@@ -1718,19 +1848,19 @@ void MainWindow::save()
 {
     if (activeMdiChild())
         if (activeMdiChild()->saveData())
-	{
+        {
             setCurrentFile(activeMdiChild()->userFriendlyCurrentFile());
             statusBar()->showMessage(tr("File saved [%1]").arg(activeMdiChild()->userFriendlyCurrentFile()), 2000);
-	}
+        }
 }
 void MainWindow::saveAs()
 {
     if (activeMdiChild())
         if (activeMdiChild()->saveData())
-	{
+        {
             setCurrentFile(activeMdiChild()->userFriendlyCurrentFile());
             statusBar()->showMessage(tr("File saved"), 2000);
-	}
+        }
 }
 void MainWindow::cut()
 {
@@ -1886,16 +2016,16 @@ void MainWindow::updateMenus()
     procTracing_manualCorrect->setEnabled(hasMdiChild);
     if (hasMdiChild)
     {
-		QDir pluginsDir = QDir(qApp->applicationDirPath());
+        QDir pluginsDir = QDir(qApp->applicationDirPath());
 #if defined(Q_OS_WIN)
-		if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-			pluginsDir.cdUp();
+        if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+            pluginsDir.cdUp();
 #elif defined(Q_OS_MAC)
-		if (pluginsDir.dirName() == "MacOS") {
-			pluginsDir.cdUp();
-			pluginsDir.cdUp();
-			pluginsDir.cdUp();
-		}
+        if (pluginsDir.dirName() == "MacOS") {
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+            pluginsDir.cdUp();
+        }
 #endif
         procTracing_APP2auto->setEnabled(pluginsDir.cd("plugins/neuron_tracing/Vaa3D_Neuron2"));
 
@@ -1946,7 +2076,7 @@ void MainWindow::updatePluginMenu()
 {
     v3d_msg("hello updatePluginMenu enter");
     if (pluginLoader)  // rescanPlugins() on 20130826 to ensure every time there is a refresh plugin list.
-                   //This may be a memory leak issue as the few menus might need to be created every time. by PHC
+        //This may be a memory leak issue as the few menus might need to be created every time. by PHC
     {
         v3d_msg("hello updatePluginMenu");
         pluginLoader->rescanPlugins(); //do nothing for now, as it seems rescanning every time is slowing down other menus and also is related to TeraFly zoom-out warning. by PHC 20130830
@@ -2302,7 +2432,7 @@ void MainWindow::createActions()
     closeAllAct->setStatusTip(tr("Close all the windows"));
 
 
-//    connect(closeAllAct, SIGNAL(triggered()), workspace, SLOT(closeAllWindows()));
+    //    connect(closeAllAct, SIGNAL(triggered()), workspace, SLOT(closeAllWindows()));
     connect(closeAllAct, SIGNAL(triggered()), this, SLOT(handleCoordinatedCloseEvent_real()));
 
 
@@ -2568,16 +2698,16 @@ void MainWindow::createMenus()
     //plugin menu
 
     pluginProcMenu = menuBar()->addMenu(tr("Plug-In"));
-//    //20130904, PHC
-//    pluginProcMenu = new Vaa3DPluginMenu(tr("Plug-In"));
-//    pluginProcMenu->setPluginLoader(pluginLoader);
-//    menuBar()->addMenu(pluginProcMenu);
-//    //menuBar()->addMenu((QMenu *)pluginProcMenu);
+    //    //20130904, PHC
+    //    pluginProcMenu = new Vaa3DPluginMenu(tr("Plug-In"));
+    //    pluginProcMenu->setPluginLoader(pluginLoader);
+    //    menuBar()->addMenu(pluginProcMenu);
+    //    //menuBar()->addMenu((QMenu *)pluginProcMenu);
 
     connect(pluginProcMenu, SIGNAL(aboutToShow()), this, SLOT(updateProcessingMenu()));
-//    connect(pluginProcMenu, SIGNAL(aboutToShow()), this, SLOT(updateMenus()));
+    //    connect(pluginProcMenu, SIGNAL(aboutToShow()), this, SLOT(updateMenus()));
     connect(pluginProcMenu, SIGNAL(aboutToShow()), this, SLOT(updatePluginMenu()));
-//    connect(pluginProcMenu, SIGNAL(QAction::triggered()), this, SLOT(updatePluginMenu()));
+    //    connect(pluginProcMenu, SIGNAL(QAction::triggered()), this, SLOT(updatePluginMenu()));
 
     //others
     windowMenu = menuBar()->addMenu(tr("&Window"));
@@ -2988,8 +3118,8 @@ void MainWindow::func_procPC_Atlas_view_atlas_computeVanoObjStat()
     bool ok1;
 #ifdef USE_Qt5
     int ch_ind = QInputDialog::getInt(this, tr("channel"),
-                                          tr("The selected directory contains %1 .ano files. <br><br> which image channel to compute the image objects statistics?").arg(listRecompute.size()),
-                                          1, 1, 3, 1, &ok1) - 1;
+                                      tr("The selected directory contains %1 .ano files. <br><br> which image channel to compute the image objects statistics?").arg(listRecompute.size()),
+                                      1, 1, 3, 1, &ok1) - 1;
     //now do for every file
 #else
     int ch_ind = QInputDialog::getInteger(this, tr("channel"),
