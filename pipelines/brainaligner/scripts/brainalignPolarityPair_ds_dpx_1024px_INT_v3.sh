@@ -593,7 +593,7 @@ echo " RCMAT: $RCMAT exists"
 else
 #---exe---#
 message " Initial align 20x subject " 
-$FLIRT -in $MDS -ref $FDS -omat $RCMAT -cost mutualinfo -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12 -datatype char
+$FLIRT -v -in $MDS -ref $FDS -omat $RCMAT -cost normmi -searchrx -120 120 -searchry -120 120 -searchrz -120 120 -dof 12 -datatype char
 fi
 
 
