@@ -315,7 +315,7 @@ message " Converting the subject reference channel into a Nifti image "
 time $Vaa3D -x ireg -f NiftiImageConverter -i $SUBSXRSRFC
 fi
 
-DSFAC=0.125
+DSFAC=0.25
 FDS=${OUTPUT}"/tar_ds.nii"
 MDS=${OUTPUT}"/sub_ds.nii"
 
@@ -347,7 +347,7 @@ echo " RCMAT: $RCMAT exists"
 else
 #---exe---#
 message " Find the rotations with FSL/flirt "
-time $FLIRT -in $MDS -ref $FDS -omat $RCMAT -cost mutualinfo -searchrx -180 180 -searchry -180 180 -searchrz -180 180 -dof 12 -datatype char
+time $FLIRT -v -in $MDS -ref $FDS -omat $RCMAT -cost mutualinfo -searchrx -90 90 -searchry -90 90 -searchrz -90 90 -dof 12 -datatype char
 fi
 
 if ( is_file_exist "$RCOUT" )
