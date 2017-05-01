@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# fly alignment pipeline, version 1.0, July 5, 2013
+# 1. fly alignment pipeline, version 1.0, July 5, 2013
+# 2. fix warping downsampled bug but might need more memory to save the transformations,
+# version 2.0, May 1, 2017
 #
 
 ################################################################################
@@ -235,9 +237,8 @@ fi
 
 message " Global alignment "
 
-MAXITERATIONS=10000x10000x10000
+MAXITERATIONS=10000x10000x10000x0
 GRADDSCNTOPTS=0.5x0.95x1.e-4x1.e-4
-DSRATIO=0.5
 
 TARREF=$((TARREF-1));
 SUBREF_ZEROIDX=$((SUBREF-1));
@@ -279,9 +280,6 @@ SUBBRAINDeformed=${OUTPUT}"/AlignedFlyBrain.v3draw"
 SIMMETRIC=${OUTPUT}"/txmi"
 AFFINEMATRIX=${OUTPUT}"/txmiAffine.txt"
 
-SUBISNIIDS=${OUTPUT}"/subtxIS_c"${SUBREF_ZEROIDX}"_ds.nii"
-TARTXNIIDS=${OUTPUT}"/temptargettx_c0_ds.nii"
-
 if ( is_file_exist "$FIXED" )
 then
 echo " FIXED: $FIXED exists"
@@ -300,31 +298,13 @@ message " Converting 20x subject into Nifti image "
 $Vaa3D -x ireg -f NiftiImageConverter -i $SUBTXIS
 fi
 
-if ( is_file_exist "$TARTXNIIDS" )
-then
-echo " TARTXNIIDS: $TARTXNIIDS exists"
-else
-#---exe---#
-message " Downsampling 20x target "
-$Vaa3D -x ireg -f resamplebyspacing -i $FIXED -o $TARTXNIIDS -p "#x $DSRATIO #y $DSRATIO #z $DSRATIO" 
-fi
-
-if ( is_file_exist "$SUBISNIIDS" )
-then
-echo " SUBISNIIDS: $SUBISNIIDS exists"
-else
-#---exe---#
-message " Downsampling 20x subject "
-$Vaa3D -x ireg -f resamplebyspacing -i $MOVING -o $SUBISNIIDS -p "#x $DSRATIO #y $DSRATIO #z $DSRATIO" 
-fi
-
 if ( is_file_exist "$AFFINEMATRIX" )
 then
 echo " AFFINEMATRIX: $AFFINEMATRIX exists"
 else
 #---exe---#
 message " Global aligning 20x fly brain to 20x target brain "
-$ANTS 3 -m MI[ $TARTXNIIDS, $SUBISNIIDS, 1, 32] -o $SIMMETRIC -i 0 --number-of-affine-iterations $MAXITERATIONS --rigid-affine true --affine-gradient-descent-option $GRADDSCNTOPTS
+$ANTS 3 -m MI[ $FIXED, $MOVING, 1, 32] -o $SIMMETRIC -i 0 --number-of-affine-iterations $MAXITERATIONS --rigid-affine true --affine-gradient-descent-option $GRADDSCNTOPTS
 fi
 
 
@@ -352,7 +332,7 @@ AFFINEMATRIXLOCAL=${OUTPUT}"/ccmiAffine.txt"
 FWDDISPFIELD=${OUTPUT}"/ccmiWarp.nii.gz"
 BWDDISPFIELD=${OUTPUT}"/ccmiInverseWarp.nii.gz"
 
-MAXITERSCC=30x90x20
+MAXITERSCC=100x70x50x0
 
 if ( is_file_exist "$AFFINEMATRIXLOCAL" )
 then
@@ -360,7 +340,7 @@ echo " AFFINEMATRIXLOCAL: $AFFINEMATRIXLOCAL exists"
 else
 #---exe---#
 message " Local aligning 20x fly brain to 20x target brain "
-$ANTS 3 -m  CC[ $TARTXNIIDS, $SUBISNIIDS, 0.75, 4] -m MI[ $TARTXNIIDS, $SUBISNIIDS, 0.25, 32] -t SyN[0.25]  -r Gauss[3,0] -o $SIMMETRIC -i $MAXITERSCC --initial-affine $AFFINEMATRIX
+$ANTS 3 -m  CC[ $FIXED, $MOVING, 0.75, 4] -m MI[ $FIXED, $MOVING, 0.25, 32] -t SyN[0.25]  -r Gauss[3,0] -o $SIMMETRIC -i $MAXITERSCC --initial-affine $AFFINEMATRIX
 fi
 
 ### warp
