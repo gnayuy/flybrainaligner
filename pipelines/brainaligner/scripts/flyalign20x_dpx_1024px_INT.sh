@@ -114,11 +114,33 @@ if [ ! -d $FINALOUTPUT ]; then
 mkdir $FINALOUTPUT
 fi
 
+processSeparatedNeuronBrain=true;
+if ( is_file_exist "$NEUBRAIN" )
+then
+echo "NEUBRAIN: $NEUBRAIN need to be warped after brain is aligned"
+else
+processSeparatedNeuronBrain=false;
+fi
+
+if ( $processSeparatedNeuronBrain )
+then
 ensureRawFileWdiffName "$Vaa3D" "$OUTPUT" "$NEUBRAIN" "${NEUBRAIN%.*}_Brain.v3draw" NEUBRAIN
 echo "RAW NEUBRAIN: $NEUBRAIN"
+fi
 
+processSeparatedNeuronVNC=true;
+if ( is_file_exist "$NEUBRAIN" )
+then
+echo "NEUVNC: $NEUVNC need to be warped after brain is aligned"
+else
+processSeparatedNeuronVNC=false;
+fi
+
+if ( $processSeparatedNeuronVNC )
+then
 ensureRawFileWdiffName "$Vaa3D" "$OUTPUT" "$NEUVNC" "${NEUVNC%.*}_VNC.v3draw" NEUVNC
 echo "RAW NEUVNC: $NEUVNC"
+fi
 
 ##################
 # Preprocessing
@@ -207,6 +229,9 @@ $Vaa3D -x ireg -f isampler -i $SUBBRAW -o $SUBTXIS -p "#x $SRX #y $SRY #z $SRZ"
 fi
 
 # for warping the neurons
+if ( $processSeparatedNeuronBrain )
+then
+
 SMLMAT=${OUTPUT}"/neubrainSampling.txt"
 
 NWSRX=`echo 1.0/$SRX | bc -l`
@@ -225,6 +250,8 @@ echo "Transform: AffineTransform_double_3_3" >> $SMLMAT
 echo "Parameters: $NWSRX 0 0 0 $NWSRY 0 0 0 $NWSRZ 0 0 0" >> $SMLMAT
 echo "FixedParameters: 0 0 0" >> $SMLMAT
 echo "" >> $SMLMAT
+fi
+
 fi
 
 ##################
@@ -419,6 +446,10 @@ $Vaa3D -x ireg -f iwarp -o $SUBVNCRotated -p "#s $SUBVRAW #t $SUBVRAW #a $ROTMAT
 fi
 
 ## brain neurons
+
+if ( $processSeparatedNeuronBrain )
+then
+
 STRN=`echo $NEUBRAIN | awk -F\. '{print $1}'`
 STRN=`basename $STRN`
 STRN=${OUTPUT}/${STRN}
@@ -485,7 +516,6 @@ $Vaa3D -x ireg -f prepare20xData -o $NEUBRAINALIGNEDRS -p "#s $NEUBRAINALIGNED #
 echo ""
 fi
 
-
 NEUBRAINALIGNEDYFLIP=${FINALOUTPUT}"/ConsolidatedLabelBrain.v3draw"
 
 if ( is_file_exist "$NEUBRAINALIGNEDYFLIP" )
@@ -498,7 +528,13 @@ $Vaa3D -x ireg -f yflip -i $NEUBRAINALIGNEDRS -o $NEUBRAINALIGNEDYFLIP
 echo ""
 fi
 
+fi
+
 ## vnc neurons
+
+if ( $processSeparatedNeuronVNC )
+then
+
 STRNVNC=`echo $NEUVNC | awk -F\. '{print $1}'`
 STRNVNC=`basename $STRNVNC`
 STRNVNC=${OUTPUT}/${STRNVNC}
@@ -588,6 +624,8 @@ else
 message " Y-Flipping neurons back "
 $Vaa3D -x ireg -f yflip -i $NEUVNCALIGNED -o $NEUVNCALIGNEDYFLIP
 echo ""
+fi
+
 fi
 
 ##################

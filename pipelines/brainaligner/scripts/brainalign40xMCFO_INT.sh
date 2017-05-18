@@ -131,8 +131,20 @@ echo ""
 # convert inputs to raw format
 ensureRawFile "$Vaa3D" "$WORKDIR" "$SUBSX" SUBSX
 echo "RAW SUB SX: $SUBSX"
+
+processSeparatedNeuron=true;
+if ( is_file_exist "$SUBSXNEURONS" )
+then
+echo "SUBSXNEURONS: $SUBSXNEURONS need to be warped after brain is aligned"
+else
+processSeparatedNeuron=false;
+fi
+
+if ( $processSeparatedNeuron )
+then
 ensureRawFileWdiffName "$Vaa3D" "$WORKDIR" "$SUBSXNEURONS" "${SUBSXNEURONS%.*}_SX.v3draw" SUBSXNEURONS
 echo "RAW SUBSXNEURONS: $SUBSXNEURONS"
+fi
 
 # Outputs/
 #         temporary files will be deleted
@@ -158,9 +170,14 @@ if [ ! -d $OUTBRAINS ]; then
 mkdir $OUTBRAINS
 fi
 
+if ( $processSeparatedNeuron )
+then
+
 OUTNEURONS=${WORKDIR}"/FinalOutputs/Neurons"
 if [ ! -d $OUTNEURONS ]; then
 mkdir $OUTNEURONS
+fi
+
 fi
 
 OUTTRANSFORMATIONS=${WORKDIR}"/FinalOutputs/Transformations"
@@ -347,6 +364,7 @@ echo " RCMAT: $RCMAT exists"
 else
 #---exe---#
 message " Find the rotations with FSL/flirt "
+export FSLOUTPUTTYPE=NIFTI_GZ
 time $FLIRT -v -in $MDS -ref $FDS -omat $RCMAT -cost normmi -searchrx -120 120 -searchry -120 120 -searchrz -120 120 -dof 12 -datatype char
 fi
 
@@ -642,6 +660,10 @@ fi
 ### warp neurons
 #
 
+if ( $processSeparatedNeuron )
+then
+
+
 if ( is_file_exist "$SUBSXNEURONS" )
 then
 
@@ -772,6 +794,8 @@ fi
 
 else
 echo " SUBSXNEURONS: $SUBSXNEURONS does not exist"
+fi
+
 fi
 
 ### keep all the transformations

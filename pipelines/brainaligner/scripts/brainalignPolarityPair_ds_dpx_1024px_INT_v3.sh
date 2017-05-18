@@ -164,11 +164,20 @@ ensureRawFile "$Vaa3D" "$WORKDIR" "$SUBSX" SUBSX
 ensureRawFile "$Vaa3D" "$WORKDIR" "$SUBTX" SUBTX
 echo "RAW SUB SX: $SUBSX"
 echo "RAW SUB TX: $SUBTX"
+
+processSeparatedNeuron=true;
+if ( is_file_exist "$SUBSXNEURONS" )
+then
+echo "SUBSXNEURONS: $SUBSXNEURONS need to be warped after brain is aligned"
+else
+processSeparatedNeuron=false;
+fi
+
+if ( $processSeparatedNeuron )
+then
 ensureRawFileWdiffName "$Vaa3D" "$WORKDIR" "$SUBSXNEURONS" "${SUBSXNEURONS%.*}_SX.v3draw" SUBSXNEURONS
 echo "RAW SUBSXNEURONS: $SUBSXNEURONS"
-ensureRawFileWdiffName "$Vaa3D" "$WORKDIR" "$SUBTXNEURONS" "${SUBTXNEURONS%.*}_TX.v3draw" SUBTXNEURONS
-echo "RAW SUBTXNEURONS: $SUBTXNEURONS"
-
+fi
 
 # Outputs/
 #         temporary files will be deleted
@@ -206,6 +215,9 @@ if [ ! -d $OUTBRAINSSX ]; then
 mkdir $OUTBRAINSSX
 fi
 
+if ( $processSeparatedNeuron )
+then
+
 OUTNEURONS=${WORKDIR}"/FinalOutputs/Neurons"
 if [ ! -d $OUTNEURONS ]; then
 mkdir $OUTNEURONS
@@ -214,6 +226,8 @@ fi
 OUTNEURONSSX=${WORKDIR}"/FinalOutputs/Neurons/63x"
 if [ ! -d $OUTNEURONSSX ]; then
 mkdir $OUTNEURONSSX
+fi
+
 fi
 
 OUTTRANSFORMATIONS=${WORKDIR}"/FinalOutputs/Transformations"
@@ -964,6 +978,9 @@ fi
 ### warp neurons
 #
 
+if ( $processSeparatedNeuron )
+then
+
 ### 63x
 
 STRN=${OUTPUT}"/subsxNeuSegs"
@@ -1081,6 +1098,8 @@ $WARP 3 $NEURONSNII $NEURONDFMD -R $FIXEDNII $FWDDISPFIELD $AFFINEMATRIXLOCAL --
 $Vaa3D -x ireg -f NiftiImageConverter -i $NEURONDFMD -o $NEURONALIGNEDYFLIP -p "#b 1 #v 2 #r 0"
 fi
 
+fi
+
 #############
 #
 ### Resize brains and neurons to target space
@@ -1114,6 +1133,9 @@ fi
 
 ### Neurons
 
+if ( $processSeparatedNeuron )
+then
+
 # 63x
 
 NEUSXWBS=${OUTPUT}"/neusxAlignedWholeBrainSpace.v3draw"
@@ -1144,6 +1166,8 @@ else
 #---exe---#
 message " Y-Flipping 63x neurons back "
 $Vaa3D -x ireg -f yflip -i $SXNEURONALIGNED -o $NEUSXALINGED
+fi
+
 fi
 
 ### keep all the transformations
