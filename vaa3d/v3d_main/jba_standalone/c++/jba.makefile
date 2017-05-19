@@ -1,7 +1,7 @@
 # by Hanchuan Peng
 # 2006-2011
 
-V3D_MAIN=../../v3d_main
+V3D_MAIN=../../../v3d_main
 
 # 64bit compilation on Macx
 CC_FLAGS += $(subst x, x,$(ARCH_x86_64))    
