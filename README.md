@@ -54,7 +54,7 @@ See [brainaligner][].
 2. Murphy, S. D., Rokicki, K., Bruns, C., Yu, Y., Foster, L., Trautman, E., ... & Clack, N. (2014). The janelia workstation for neuroscience. Keystone Big Data in Biology. san francisco. CA.
 
 ## Author information
-Please contact Yang Yu (yuy.cse@gmail.com) if you have any questions.
+Please contact Yang Yu (gnayuy@gmail.com) if you have any questions.
 
 ##
 
